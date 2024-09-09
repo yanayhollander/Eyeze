@@ -10,6 +10,9 @@
 		F45931592C8D72A300DA4FC3 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931562C8D72A300DA4FC3 /* HomeView.swift */; };
 		F459315A2C8D72A300DA4FC3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931572C8D72A300DA4FC3 /* SettingsView.swift */; };
 		F459315B2C8D72A300DA4FC3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931582C8D72A300DA4FC3 /* ContentView.swift */; };
+		F45931602C8ECAF300DA4FC3 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = F459315F2C8ECAF300DA4FC3 /* SwiftOpenAI */; };
+		F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931642C8EE1BC00DA4FC3 /* ChatProvider.swift */; };
+		F45931672C8EE21B00DA4FC3 /* ChatDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */; };
 		F46C8C7B2C8B3A3900978CE7 /* EyezeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */; };
 		F46C8C7F2C8B3A3A00978CE7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */; };
 		F46C8C832C8B3A3A00978CE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C822C8B3A3A00978CE7 /* Preview Assets.xcassets */; };
@@ -21,6 +24,10 @@
 		F45931562C8D72A300DA4FC3 /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		F45931572C8D72A300DA4FC3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F45931582C8D72A300DA4FC3 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F45931642C8EE1BC00DA4FC3 /* ChatProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProvider.swift; sourceTree = "<group>"; };
+		F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDemoView.swift; sourceTree = "<group>"; };
+		F45931682C8EED1F00DA4FC3 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
+		F45931692C8EEDBA00DA4FC3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F46C8C772C8B3A3900978CE7 /* Eyeze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eyeze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyezeApp.swift; sourceTree = "<group>"; };
 		F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -36,15 +43,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F45931602C8ECAF300DA4FC3 /* SwiftOpenAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F45931632C8EE1AA00DA4FC3 /* ChatDemo */ = {
+			isa = PBXGroup;
+			children = (
+				F45931642C8EE1BC00DA4FC3 /* ChatProvider.swift */,
+				F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */,
+			);
+			path = ChatDemo;
+			sourceTree = "<group>";
+		};
 		F46C8C6E2C8B3A3900978CE7 = {
 			isa = PBXGroup;
 			children = (
+				F45931682C8EED1F00DA4FC3 /* Config.xcconfig */,
 				F46C8C792C8B3A3900978CE7 /* Eyeze */,
 				F46C8C782C8B3A3900978CE7 /* Products */,
 			);
@@ -61,6 +79,8 @@
 		F46C8C792C8B3A3900978CE7 /* Eyeze */ = {
 			isa = PBXGroup;
 			children = (
+				F45931692C8EEDBA00DA4FC3 /* Info.plist */,
+				F45931632C8EE1AA00DA4FC3 /* ChatDemo */,
 				F46C8CA12C8D701C00978CE7 /* ARViewController */,
 				F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */,
 				F45931582C8D72A300DA4FC3 /* ContentView.swift */,
@@ -107,6 +127,9 @@
 			dependencies = (
 			);
 			name = Eyeze;
+			packageProductDependencies = (
+				F459315F2C8ECAF300DA4FC3 /* SwiftOpenAI */,
+			);
 			productName = Eyeze;
 			productReference = F46C8C772C8B3A3900978CE7 /* Eyeze.app */;
 			productType = "com.apple.product-type.application";
@@ -135,6 +158,9 @@
 				Base,
 			);
 			mainGroup = F46C8C6E2C8B3A3900978CE7;
+			packageReferences = (
+				F459315E2C8ECAF300DA4FC3 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */,
+			);
 			productRefGroup = F46C8C782C8B3A3900978CE7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -161,7 +187,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */,
 				F459315A2C8D72A300DA4FC3 /* SettingsView.swift in Sources */,
+				F45931672C8EE21B00DA4FC3 /* ChatDemoView.swift in Sources */,
 				F46C8C9F2C8D700C00978CE7 /* DistanceLabelUtils.swift in Sources */,
 				F459315B2C8D72A300DA4FC3 /* ContentView.swift in Sources */,
 				F45931592C8D72A300DA4FC3 /* HomeView.swift in Sources */,
@@ -289,6 +317,7 @@
 		};
 		F46C8C872C8B3A3A00978CE7 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F45931682C8EED1F00DA4FC3 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -300,6 +329,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Eyeze/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -328,6 +358,7 @@
 		};
 		F46C8C882C8B3A3A00978CE7 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F45931682C8EED1F00DA4FC3 /* Config.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -339,6 +370,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Eyeze/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -387,6 +419,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F459315E2C8ECAF300DA4FC3 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/jamesrochabrun/SwiftOpenAI?tab=readme-ov-file#azure-openai:~:text=search%20bar%2C%20enter-,this%20URL,-.";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F459315F2C8ECAF300DA4FC3 /* SwiftOpenAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F459315E2C8ECAF300DA4FC3 /* XCRemoteSwiftPackageReference "SwiftOpenAI" */;
+			productName = SwiftOpenAI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F46C8C6F2C8B3A3900978CE7 /* Project object */;
 }

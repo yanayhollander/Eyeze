@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "swiftopenai?tab=readme-ov-file#azure-openai:~:text=search%20bar%2c%20enter-,this%20url,-.",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jamesrochabrun/SwiftOpenAI?tab=readme-ov-file#azure-openai:~:text=search%20bar%2C%20enter-,this%20URL,-.",
+      "state" : {
+        "revision" : "3be54cb482090a1ff0a826e811f3be3c9ca56344",
+        "version" : "2.9.0"
+      }
+    }
+  ],
+  "version" : 2
+}
