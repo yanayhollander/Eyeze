@@ -10,23 +10,10 @@ import SwiftOpenAI
 
 struct ChatDemoView: View {
     
-    @State private var chatProvider: ChatProvider
+    @State private var azureAiService: AzureAiService
     @State private var isLoading = false
-    @State private var prompt = """
-                        Consider that a blind person is looking at the picture and describe:
-                            1) The potential obsticles
-                            2) The people and their facial expressions
-                            3) My surrounding
-                            Provide a json response according to the following format:
-                            {{
-                                peopleFacial: ""key value pairs of each person with his location in the picture and it's facial expression in keywords"",
-                                obstacles: ""Describe the obstacles in the picture"",
-                                obstaclesKeywords: ""Describe the obstacles in keywords""
-                                surrounding: ""Describe the surrounding in keywords"",
-                            }}
-                    """
+
     @State private var selectedSegment: ChatConfig = .chatCompletion
-    @State private var azureAiDeployment = ""
     
     // Add a state variable to hold the base64 string
     @State private var base64ImageString: String?
@@ -37,32 +24,7 @@ struct ChatDemoView: View {
     }
     
     init() {
-        guard let infoDictionary: [String: Any] = Bundle.main.infoDictionary else {
-            fatalError("Info.plist file not found")
-        }
-        guard let azureAiResourceName: String = infoDictionary["AzureAiResourceName"] as? String else {
-            fatalError("AzureAIResourceName was not set in Info.plist")
-        }
-        guard let azureAiApiKey: String = infoDictionary["AzureAiApiKey"] as? String else {
-            fatalError("AzureAIApiKey was not set in Info.plist")
-        }
-        guard let azureAiApiVersion: String = infoDictionary["AzureAiApiVersion"] as? String else {
-            fatalError("AzureAIApiVersion was not set in Info.plist")
-        }
-        
-        guard let azureAiDeployment: String = infoDictionary["AzureAiDeployment"] as? String else {
-            fatalError("AzureAiDeployment was not set in Info.plist")
-        }
-        
-        self.azureAiDeployment = azureAiDeployment
-        
-        let azureConfiguration = AzureOpenAIConfiguration(
-            resourceName: azureAiResourceName,
-            openAIAPIKey: .apiKey(azureAiApiKey),
-            apiVersion: azureAiApiVersion)
-        
-        let service = OpenAIServiceFactory.service(azureConfiguration: azureConfiguration)
-        _chatProvider = State(initialValue: ChatProvider(service: service))
+        _azureAiService = State(initialValue: AzureAiService())
     }
     
     var body: some View {
@@ -82,7 +44,7 @@ struct ChatDemoView: View {
                         Text("Failed to load image")
                     }
                 }
-                Text(chatProvider.errorMessage)
+                Text(azureAiService.errorMessage)
                     .foregroundColor(.red)
                 switch selectedSegment {
                 case .chatCompeltionStream:
@@ -121,19 +83,13 @@ struct ChatDemoView: View {
                     
                     let image = loadTestImage(name: "testImage2")
                     base64ImageString = image // Store the base64 string
-                    
-                    let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [.text(prompt), .imageUrl(.init(url: URL(string: image)!))]
-                    let parameters = ChatCompletionParameters(messages: [.init(role: .user, content: .contentArray(messageContent))],
-                                                              model: .custom(azureAiDeployment),
-                                                              logProbs: true,
-                                                              topLogprobs: 1)
-                    
-                    prompt = ""
+                  
                     switch selectedSegment {
                     case .chatCompletion:
-                        try await chatProvider.startChat(parameters: parameters)
+                        try await azureAiService.describeScene(base64Image: image)
                     case .chatCompeltionStream:
-                        try await chatProvider.startStreamedChat(parameters: parameters)
+                        try await azureAiService.describeScene(base64Image: image)
+//                        try await chatProvider.startStreamedChat(parameters: parameters)
                     }
                 }
             } label: {
@@ -146,20 +102,74 @@ struct ChatDemoView: View {
     
     /// stream = `false`
     var chatCompletionResultView: some View {
-        ForEach(Array(chatProvider.messages.enumerated()), id: \.offset) { idx, val in
-            VStack(spacing: 0) {
-                Text("\(val)")
-            }
+        if let response = azureAiService.response {
+            return AnyView(
+                VStack(alignment: .leading, spacing: 8) {
+                    // Iterate over peopleFacial
+                    ForEach(response.peopleFacial.indices, id: \.self) { index in
+                        let person = response.peopleFacial[index]
+                        Text("Person \(index + 1):")
+                            .font(.subheadline)
+                            .bold()
+                        Text("Location: \(person.location)")
+                            .padding(.leading, 8)
+                        Text("Expression: \(person.expression)")
+                            .padding(.leading, 8)
+                    }
+                    
+                    // Display Obstacles
+                    if !response.obstacles.isEmpty {
+                        Text("Obstacles:")
+                            .font(.subheadline)
+                            .bold()
+                            .padding(.top, 4)
+                        ForEach(response.obstacles, id: \.self) { obstacle in
+                            Text("- \(obstacle)")
+                                .padding(.leading, 8)
+                        }
+                    }
+                    
+                    // Display Obstacles Keywords
+                    if !response.obstaclesKeywords.isEmpty {
+                        Text("Obstacles Keywords:")
+                            .font(.subheadline)
+                            .bold()
+                            .padding(.top, 4)
+                        Text(response.obstaclesKeywords.joined(separator: ", "))
+                            .padding(.leading, 8)
+                    }
+                    
+                    // Display Surrounding
+                    if !response.surrounding.isEmpty {
+                        Text("Surrounding:")
+                            .font(.subheadline)
+                            .bold()
+                            .padding(.top, 4)
+                        Text(response.surrounding.joined(separator: ", "))
+                            .padding(.leading, 8)
+                    }
+                    
+                    Divider() // Adds a separator line between each response
+                }
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground)) // Optional: Background color for clarity
+                .cornerRadius(8)
+                .shadow(radius: 2)
+                .padding(.horizontal)
+            )
+        } else {
+            return AnyView(Text("")) // Wrap the Text view with AnyView
         }
     }
+
     
     /// stream = `true`
     var streamedChatResultView: some View {
         VStack {
             Button("Cancel stream") {
-                chatProvider.cancelStream()
+//                azureAiService.cancelStream()
             }
-            Text(chatProvider.message)
+            Text(azureAiService.message)
         }
     }
     
@@ -178,12 +188,4 @@ struct ChatDemoView: View {
     }
 }
 
-extension UIImage {
-    convenience init?(base64String: String) {
-        let components = base64String.components(separatedBy: ",")
-        guard components.count == 2, let data = Data(base64Encoded: components[1]) else {
-            return nil
-        }
-        self.init(data: data)
-    }
-}
+

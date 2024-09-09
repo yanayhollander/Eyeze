@@ -13,6 +13,10 @@
 		F45931602C8ECAF300DA4FC3 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = F459315F2C8ECAF300DA4FC3 /* SwiftOpenAI */; };
 		F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931642C8EE1BC00DA4FC3 /* ChatProvider.swift */; };
 		F45931672C8EE21B00DA4FC3 /* ChatDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */; };
+		F459318E2C8F36A000DA4FC3 /* AzureAiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459318D2C8F36A000DA4FC3 /* AzureAiConfig.swift */; };
+		F45931902C8F3B9400DA4FC3 /* AzureAiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459318F2C8F3B9400DA4FC3 /* AzureAiService.swift */; };
+		F45931932C8F421E00DA4FC3 /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931922C8F421E00DA4FC3 /* OpenAIResponse.swift */; };
+		F45931962C8F529700DA4FC3 /* UtilsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931952C8F529700DA4FC3 /* UtilsExtensions.swift */; };
 		F46C8C7B2C8B3A3900978CE7 /* EyezeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */; };
 		F46C8C7F2C8B3A3A00978CE7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */; };
 		F46C8C832C8B3A3A00978CE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C822C8B3A3A00978CE7 /* Preview Assets.xcassets */; };
@@ -28,6 +32,10 @@
 		F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDemoView.swift; sourceTree = "<group>"; };
 		F45931682C8EED1F00DA4FC3 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		F45931692C8EEDBA00DA4FC3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F459318D2C8F36A000DA4FC3 /* AzureAiConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureAiConfig.swift; sourceTree = "<group>"; };
+		F459318F2C8F3B9400DA4FC3 /* AzureAiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureAiService.swift; sourceTree = "<group>"; };
+		F45931922C8F421E00DA4FC3 /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
+		F45931952C8F529700DA4FC3 /* UtilsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilsExtensions.swift; sourceTree = "<group>"; };
 		F46C8C772C8B3A3900978CE7 /* Eyeze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eyeze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyezeApp.swift; sourceTree = "<group>"; };
 		F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -59,6 +67,31 @@
 			path = ChatDemo;
 			sourceTree = "<group>";
 		};
+		F459318C2C8F368500DA4FC3 /* AzureAi */ = {
+			isa = PBXGroup;
+			children = (
+				F459318D2C8F36A000DA4FC3 /* AzureAiConfig.swift */,
+				F459318F2C8F3B9400DA4FC3 /* AzureAiService.swift */,
+			);
+			path = AzureAi;
+			sourceTree = "<group>";
+		};
+		F45931912C8F420300DA4FC3 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				F45931922C8F421E00DA4FC3 /* OpenAIResponse.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		F45931942C8F528200DA4FC3 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				F45931952C8F529700DA4FC3 /* UtilsExtensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		F46C8C6E2C8B3A3900978CE7 = {
 			isa = PBXGroup;
 			children = (
@@ -79,13 +112,16 @@
 		F46C8C792C8B3A3900978CE7 /* Eyeze */ = {
 			isa = PBXGroup;
 			children = (
-				F45931692C8EEDBA00DA4FC3 /* Info.plist */,
+				F45931942C8F528200DA4FC3 /* Extensions */,
+				F45931912C8F420300DA4FC3 /* Models */,
+				F459318C2C8F368500DA4FC3 /* AzureAi */,
 				F45931632C8EE1AA00DA4FC3 /* ChatDemo */,
 				F46C8CA12C8D701C00978CE7 /* ARViewController */,
 				F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */,
 				F45931582C8D72A300DA4FC3 /* ContentView.swift */,
 				F45931562C8D72A300DA4FC3 /* HomeView.swift */,
 				F45931572C8D72A300DA4FC3 /* SettingsView.swift */,
+				F45931692C8EEDBA00DA4FC3 /* Info.plist */,
 				F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */,
 				F46C8C802C8B3A3A00978CE7 /* Eyeze.entitlements */,
 				F46C8C812C8B3A3A00978CE7 /* Preview Content */,
@@ -187,9 +223,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F459318E2C8F36A000DA4FC3 /* AzureAiConfig.swift in Sources */,
+				F45931962C8F529700DA4FC3 /* UtilsExtensions.swift in Sources */,
+				F45931902C8F3B9400DA4FC3 /* AzureAiService.swift in Sources */,
 				F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */,
 				F459315A2C8D72A300DA4FC3 /* SettingsView.swift in Sources */,
 				F45931672C8EE21B00DA4FC3 /* ChatDemoView.swift in Sources */,
+				F45931932C8F421E00DA4FC3 /* OpenAIResponse.swift in Sources */,
 				F46C8C9F2C8D700C00978CE7 /* DistanceLabelUtils.swift in Sources */,
 				F459315B2C8D72A300DA4FC3 /* ContentView.swift in Sources */,
 				F45931592C8D72A300DA4FC3 /* HomeView.swift in Sources */,
