@@ -100,7 +100,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
         responseTextView.backgroundColor = .lightGray
         responseTextView.textColor = .black
         responseTextView.font = UIFont.systemFont(ofSize: 16)
-        responseTextView.text = "yanay"
+        responseTextView.isHidden = true
         captureContainer.addSubview(responseTextView)
         
         // Layout constraints
@@ -117,7 +117,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
             
             responseTextView.topAnchor.constraint(equalTo: captureContainer.topAnchor),
             responseTextView.leftAnchor.constraint(equalTo: captureContainer.leftAnchor, constant: 30),
-            responseTextView.heightAnchor.constraint(equalToConstant: 50),
+            responseTextView.heightAnchor.constraint(equalToConstant: 70),
             responseTextView.rightAnchor.constraint(equalTo: captureButton.leftAnchor, constant: -30)
         ])
     }
@@ -194,14 +194,25 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     return
                 }
                 
+                DispatchQueue.main.async {
+                    self.responseTextView.isHidden = false
+                    self.responseTextView.text = "Loading..."
+                }
                 try await azureAiService.describeScene(base64Image: base64Image)
                 print("Scene description successfully retrieved.")
                 if let response = azureAiService.response {
-                    responseTextView.text = String(describing: response)
+                    DispatchQueue.main.async {
+                        
+                        self.responseTextView.text = String(describing: response)
+                    }
+                    
                 }
                  // Update the TextView with the response
             } catch {
                 print("Failed to describe scene: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.responseTextView.text = "Failed to describe scene: \(error.localizedDescription)"
+                }
             }
         }
     }
