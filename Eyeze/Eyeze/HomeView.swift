@@ -11,9 +11,9 @@ struct HomeView: View {
     
     var body: some View {
         VStack {
-            ARViewContainer()
-                .edgesIgnoringSafeArea(.all)
-//            ChatDemoView()
+//            ARViewContainer()
+//                .edgesIgnoringSafeArea(.all)
+            ChatDemoView()
         }
     }
 }

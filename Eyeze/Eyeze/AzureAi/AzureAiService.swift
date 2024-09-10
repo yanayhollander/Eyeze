@@ -23,6 +23,31 @@ protocol AzureAiServiceProtocol {
     var message: String = ""
     
     let prompt = """
+                        Consider that a blind person speak in Hebrew is looking at the picture and describe:
+                            1) The potential obsticles
+                            2) The people and their facial expressions
+                            3) My surrounding
+                            Provide a json response in Hebrew according to the following format:
+                            {
+                                peopleFacial: "array of object for each person with his location in the picture and it's facial expression in keywords",
+                                obstacles: "array of strings describe the obstacles in the picture",
+                                obstaclesKeywords: "array of strings describes the obstacles in keywords"
+                                surrounding: "array of strings describe the surrounding in keywords",
+                            }
+                    
+                            for example:
+                            {
+                                peopleFacial: [{
+                                    location: "ימין",
+                                    expression: "מפוקס"
+                                }],
+                                obstacles: ["נוכחות של רובוט עלולה לבלבל", "המחשב יכול לגרום לקושי בהנחה על השולחן.", "הדלת של הארון. פתוחה."],
+                                obstaclesKeywords: ["מחשב שולחני", "מחשב", "דגל של ארון"],
+                                surrounding: ["סביבה משרדית מודרנית", "נוף של קו השמיים של העיר", "עיצוב טכנולוגי מתוחכם", "תאורה כחולה"]
+                            }
+                    """
+    
+    let promptEn = """
                         Consider that a blind person is looking at the picture and describe:
                             1) The potential obsticles
                             2) The people and their facial expressions
