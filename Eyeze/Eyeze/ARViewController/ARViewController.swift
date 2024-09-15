@@ -36,6 +36,10 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private var captureButton: UIButton!
     private var responseTextView: UITextView!
     
+    // Store the last notification times for different texts
+    private var lastNotificationTimes: [String: Date] = [:]
+    private let DEBOUNCE_INTERVAL = 1.0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupARView()
@@ -132,7 +136,8 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private func detectMultiplePoints() {
         let screenPoints = DistanceUtils.getScreenPoints(for: view)
         var closestDistance: Float = .infinity
-
+        
+        var detectedResults: [DistanceResult] = []
         
         // Iterate through all screen points
         for (index, point) in screenPoints.all.enumerated() {
@@ -141,23 +146,49 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 let distance = Float(result.distance)
                 closestDistance = min(closestDistance, distance)
                 
-                let distanceLevel = DistanceUtils.onDistanceUpdate(
+                // Get distance result
+                let distanceResult = DistanceUtils.onDistanceUpdate(
                     distance: Double(distance),
                     detectionDistance: detectionDistance,
                     warningDistance: warningDistance,
                     alertDistance: alertDistance,
                     screenPoints: screenPoints,
-                    point: point)
-
+                    point: point
+                )
+                
+                detectedResults.append(distanceResult)
+                
                 // Update the distance label
-                DistanceUtils.updateDistanceLabel(distanceLabels[index], distance: CGFloat(distance), distanceLevel: distanceLevel)
+                DistanceUtils.updateDistanceLabel(distanceLabels[index], distance: CGFloat(distance), distanceLevel: distanceResult.level)
             }
         }
         
-//        // Trigger haptic feedback if any top points were detected below the threshold
-//        if topPointDetectedBelowThreshold {
-//            print("Careful TOP")
-//        }
+        // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
+        if detectedResults.isTop() {
+            notify("TOP")
+        }
+        
+        if detectedResults.isCenter() {
+            notify("Center")
+        }
+        
+        if detectedResults.isBottom() {
+            notify("Bottom")
+        }
+    }
+    
+    private func notify(_ text: String) {
+        let now = Date()
+        if let lastTime = lastNotificationTimes[text], now.timeIntervalSince(lastTime) < DEBOUNCE_INTERVAL {
+            // If the same text was notified less than an interval, ignore it
+            return
+        }
+
+        // Update the last notification time for this text
+        lastNotificationTimes[text] = now
+
+        // Perform the notification
+        print(text)
     }
     
     private func triggerHapticFeedback() {
@@ -226,7 +257,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     }
                     
                 }
-                 // Update the TextView with the response
+                // Update the TextView with the response
             } catch {
                 print("Failed to describe scene: \(error.localizedDescription)")
                 DispatchQueue.main.async {

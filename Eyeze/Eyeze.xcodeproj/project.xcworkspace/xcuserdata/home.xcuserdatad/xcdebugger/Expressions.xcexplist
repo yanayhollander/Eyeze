@@ -10,5 +10,16 @@
             </PersistentString>
          </PersistentStrings>
       </ContextState>
+      <ContextState
+         contextName = "static DistanceUtils.onDistanceUpdate(distance:detectionDistance:warningDistance:alertDistance:screenPoints:point:):DistanceUtils.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "screenPoints.top.contains(point)">
+            </PersistentString>
+            <PersistentString
+               value = "distanceResult.level">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
    </ContextStates>
 </VariablesViewState>

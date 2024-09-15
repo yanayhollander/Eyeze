@@ -16,14 +16,14 @@ struct OpenAIResponse: Codable {
         
         // Iterate over the peopleFacial array with indices
         for (index, person) in peopleFacial.enumerated() {
-            result += "\(String(localized: "person")) \(index + 1):\n"
-            result += "\(String(localized: "location")): \(person.location).\n"
-            result += "\(String(localized: "expression")): \(person.expression).\n"
+            result += "person \(index + 1):\n"
+            result += "location: \(person.location).\n"
+            result += "expression: \(person.expression).\n"
         }
         
         // Add obstacles if there are any
         if !obstacles.isEmpty {
-            result += "\(String(localized: "obstacles")):\n"
+            result += "obstacles:\n"
             for obstacle in obstacles {
                 result += "- \(obstacle).\n"
             }
@@ -31,12 +31,12 @@ struct OpenAIResponse: Codable {
         
         // Add obstacle keywords if there are any
         if !obstaclesKeywords.isEmpty {
-            result += "\(String(localized: "obstacles_keywords_title")): \(obstaclesKeywords.joined(separator: ", ")).\n"
+            result += "Obstacles Keywords: \(obstaclesKeywords.joined(separator: ", ")).\n"
         }
         
         // Add surrounding details if there are any
         if !surrounding.isEmpty {
-            result += "\(String(localized: "surrounding")): \(surrounding.joined(separator: ", ")).\n"
+            result += "Surrounding: \(surrounding.joined(separator: ", ")).\n"
         }
         
         return result

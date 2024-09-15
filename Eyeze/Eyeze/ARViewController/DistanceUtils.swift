@@ -20,7 +20,8 @@ struct ScreenPoints {
 }
 
 struct DistanceResult {
-    
+    var level: DistanceLevel?
+    var detectedCells: [Int] = []
 }
 
 /// Utility class for managing distance labels.
@@ -51,24 +52,34 @@ class DistanceUtils {
         return ScreenPoints(top: topPoints, center: centerPoints, bottom: bottomPoints, left: [topPoints[0], centerPoints[0], bottomPoints[0]], right: [topPoints[2], centerPoints[2], bottomPoints[2]])
     }
     
-    static func onDistanceUpdate(distance: Double, detectionDistance: Double, warningDistance: Double, alertDistance: Double, screenPoints: ScreenPoints, point: CGPoint) -> DistanceLevel? {
+    static func onDistanceUpdate(distance: Double, detectionDistance: Double, warningDistance: Double, alertDistance: Double, screenPoints: ScreenPoints, point: CGPoint) -> DistanceResult {
         
-        var distanceLevel: DistanceLevel? = nil
+        var distanceResult = DistanceResult(level: nil)
         
-        if (distance < alertDistance) {
-            distanceLevel = .alert
+        // Determine the distance level
+        if distance < alertDistance {
+            distanceResult.level = .alert
         } else if distance < warningDistance {
-            distanceLevel = .warning
+            distanceResult.level = .warning
         } else if distance < detectionDistance {
-            distanceLevel = .detection
+            distanceResult.level = .detection
         }
         
-//        // Check if the point is in the top group and is below the threshold
-//        if screenPoints.top.contains(point), distanceLevel == .alert {
-//            topPointDetectedBelowThreshold = true
-//        }
+        // Check which cell the point belongs to and add it to the detectedCells
+        if let cellIndex = getCellIndex(for: point, in: screenPoints), distance < alertDistance {
+            distanceResult.detectedCells.append(cellIndex)
+        }
         
-        return distanceLevel
+        return distanceResult
+    }
+
+    private static func getCellIndex(for point: CGPoint, in screenPoints: ScreenPoints) -> Int? {
+        // Mapping each point to its corresponding cell index (1-9)
+        let allPoints = screenPoints.top + screenPoints.center + screenPoints.bottom
+        if let index = allPoints.firstIndex(of: point) {
+            return index + 1 // Convert zero-based index to 1-based
+        }
+        return nil
     }
     
     /// Updates the distance label's text and color based on the distance.
@@ -98,5 +109,32 @@ class DistanceUtils {
         label.textColor = textColor
         label.alpha = alpha
         
+    }
+}
+
+
+extension [DistanceResult] {
+    private func contains(indices: [Int]) -> Bool {
+        let flatMap = self.flatMap { $0.detectedCells }
+        var isExists = false
+        indices.forEach { ind in
+            if(flatMap.contains(ind)) {
+                isExists = true
+            }
+        }
+        
+        return isExists
+    }
+    
+    func isTop() -> Bool {
+        return contains(indices: [1, 2, 3])
+    }
+    
+    func isCenter() -> Bool {
+        return contains(indices: [4, 5, 6])
+    }
+    
+    func isBottom() -> Bool {
+        return contains(indices: [7, 8, 9])
     }
 }
