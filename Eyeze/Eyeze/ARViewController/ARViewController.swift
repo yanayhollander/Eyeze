@@ -40,6 +40,8 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private var lastNotificationTimes: [String: Date] = [:]
     private let DEBOUNCE_INTERVAL = 1.0
     
+    private var hasDrawnDistanceLabels = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupARView()
@@ -49,7 +51,11 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        drawDistanceLabels()
+        
+        if !hasDrawnDistanceLabels {
+            drawDistanceLabels()
+            hasDrawnDistanceLabels = true
+        }
     }
     
     // MARK: - ARSessionDelegate Methods
