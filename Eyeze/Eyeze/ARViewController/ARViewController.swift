@@ -74,8 +74,8 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     private func drawDistanceLabels() {
-        let labelPoints = DistanceLabelUtils.getScreenPoints(for: view)
-        distanceLabels = labelPoints.map { createDistanceLabel(at: $0) }
+        let labelPoints = DistanceUtils.getScreenPoints(for: view)
+        distanceLabels = labelPoints.all.map { createDistanceLabel(at: $0) }
         distanceLabels.forEach {
             view.addSubview($0)
         }
@@ -130,36 +130,34 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     // MARK: - Detection and Feedback Methods
     private func detectMultiplePoints() {
-        let screenPoints = DistanceLabelUtils.getScreenPoints(for: view)
+        let screenPoints = DistanceUtils.getScreenPoints(for: view)
         var closestDistance: Float = .infinity
+
         
-        for (index, point) in screenPoints.enumerated() {
+        // Iterate through all screen points
+        for (index, point) in screenPoints.all.enumerated() {
             let hitTestResults = arView.hitTest(point, types: [.existingPlaneUsingExtent, .featurePoint])
             if let result = hitTestResults.first {
                 let distance = Float(result.distance)
                 closestDistance = min(closestDistance, distance)
                 
-                let distanceLevel = DistanceLabelUtils.onDistanceUpdate(
+                let distanceLevel = DistanceUtils.onDistanceUpdate(
                     distance: Double(distance),
                     detectionDistance: detectionDistance,
                     warningDistance: warningDistance,
-                    alertDistance: alertDistance)
-                
-                DistanceLabelUtils.updateDistanceLabel(distanceLabels[index], distance: distance, distanceLevel: distanceLevel)
-                
-                guard let distanceLevel = distanceLevel else { return }
-                
-                switch distanceLevel {
-                case .detection:
-                    break
-                case .warning:
-                    triggerHapticFeedback()
-                case .alert:
-                    triggerHapticFeedback()
-                }
+                    alertDistance: alertDistance,
+                    screenPoints: screenPoints,
+                    point: point)
+
+                // Update the distance label
+                DistanceUtils.updateDistanceLabel(distanceLabels[index], distance: CGFloat(distance), distanceLevel: distanceLevel)
             }
         }
-    
+        
+//        // Trigger haptic feedback if any top points were detected below the threshold
+//        if topPointDetectedBelowThreshold {
+//            print("Careful TOP")
+//        }
     }
     
     private func triggerHapticFeedback() {

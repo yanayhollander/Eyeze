@@ -23,7 +23,7 @@
 		F46C8C7B2C8B3A3900978CE7 /* EyezeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */; };
 		F46C8C7F2C8B3A3A00978CE7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */; };
 		F46C8C832C8B3A3A00978CE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C822C8B3A3A00978CE7 /* Preview Assets.xcassets */; };
-		F46C8C9F2C8D700C00978CE7 /* DistanceLabelUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C9E2C8D700C00978CE7 /* DistanceLabelUtils.swift */; };
+		F46C8C9F2C8D700C00978CE7 /* DistanceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C9E2C8D700C00978CE7 /* DistanceUtils.swift */; };
 		F46C8CA02C8D700C00978CE7 /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C9D2C8D700C00978CE7 /* ARViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,7 +49,7 @@
 		F46C8C822C8B3A3A00978CE7 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F46C8C942C8CED6F00978CE7 /* DistanceLabelUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DistanceLabelUtils.swift; path = ../Utils/DistanceLabelUtils.swift; sourceTree = "<group>"; };
 		F46C8C9D2C8D700C00978CE7 /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
-		F46C8C9E2C8D700C00978CE7 /* DistanceLabelUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceLabelUtils.swift; sourceTree = "<group>"; };
+		F46C8C9E2C8D700C00978CE7 /* DistanceUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceUtils.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,7 +151,7 @@
 			isa = PBXGroup;
 			children = (
 				F46C8C9D2C8D700C00978CE7 /* ARViewController.swift */,
-				F46C8C9E2C8D700C00978CE7 /* DistanceLabelUtils.swift */,
+				F46C8C9E2C8D700C00978CE7 /* DistanceUtils.swift */,
 			);
 			path = ARViewController;
 			sourceTree = "<group>";
@@ -242,7 +242,7 @@
 				F459315A2C8D72A300DA4FC3 /* SettingsView.swift in Sources */,
 				F45931672C8EE21B00DA4FC3 /* ChatDemoView.swift in Sources */,
 				F45931932C8F421E00DA4FC3 /* OpenAIResponse.swift in Sources */,
-				F46C8C9F2C8D700C00978CE7 /* DistanceLabelUtils.swift in Sources */,
+				F46C8C9F2C8D700C00978CE7 /* DistanceUtils.swift in Sources */,
 				F459319D2C96F43200DA4FC3 /* DistanceLevel.swift in Sources */,
 				F459315B2C8D72A300DA4FC3 /* ContentView.swift in Sources */,
 				F45931592C8D72A300DA4FC3 /* HomeView.swift in Sources */,
