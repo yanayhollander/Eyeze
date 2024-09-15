@@ -75,7 +75,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     private func drawDistanceLabels() {
         let labelPoints = DistanceLabelUtils.getScreenPoints(for: view)
-        distanceLabels = labelPoints.map { createDistanceLabel(at: $0) }
+        distanceLabels = labelPoints.map { createDistanceLabel(for: view, at: $0) }
         distanceLabels.forEach {
             view.addSubview($0)
         }
@@ -130,37 +130,46 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     // MARK: - Detection and Feedback Methods
     private func detectMultiplePoints() {
-        let screenPoints = DistanceLabelUtils.getScreenPoints(for: view)
+        let screenPoints = DistanceLabelUtils.getScreenPoints(for: self.view)
         var closestDistance: Float = .infinity
-        
+        var distances = [(index: Int, distance: Float, distanceLevel: DistanceLevel?)]()
+
+        // Perform hit tests on the main thread
         for (index, point) in screenPoints.enumerated() {
             let hitTestResults = arView.hitTest(point, types: [.existingPlaneUsingExtent, .featurePoint])
             if let result = hitTestResults.first {
                 let distance = Float(result.distance)
                 closestDistance = min(closestDistance, distance)
-                
+
                 let distanceLevel = DistanceLabelUtils.onDistanceUpdate(
                     distance: Double(distance),
-                    detectionDistance: detectionDistance,
-                    warningDistance: warningDistance,
-                    alertDistance: alertDistance)
-                
-                DistanceLabelUtils.updateDistanceLabel(distanceLabels[index], distance: distance, distanceLevel: distanceLevel)
-                
-                guard let distanceLevel = distanceLevel else { return }
-                
-                switch distanceLevel {
-                case .detection:
-                    break
-                case .warning:
-                    triggerHapticFeedback()
-                case .alert:
-                    triggerHapticFeedback()
+                    detectionDistance: self.detectionDistance,
+                    warningDistance: self.warningDistance,
+                    alertDistance: self.alertDistance)
+
+                distances.append((index: index, distance: distance, distanceLevel: distanceLevel))
+            }
+        }
+        
+        // Perform UI updates in a separate loop to batch the updates
+        DispatchQueue.main.async {
+            for (index, distance, distanceLevel) in distances {
+                DistanceLabelUtils.updateDistanceLabel(self.distanceLabels[index], distance: distance, distanceLevel: distanceLevel)
+
+                // Trigger haptic feedback
+                if let distanceLevel = distanceLevel {
+                    switch distanceLevel {
+                    case .detection:
+                        break
+                    case .warning, .alert:
+                        self.triggerHapticFeedback()
+                    }
                 }
             }
         }
-    
     }
+
+
     
     private func triggerHapticFeedback() {
         if enableVibration {
@@ -169,10 +178,16 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     // MARK: - Helper Methods
-    private func createDistanceLabel(at point: CGPoint) -> UILabel {
+    private func createDistanceLabel(for view: UIView, at point: CGPoint) -> UILabel {
+        let layoutFrame = view.safeAreaLayoutGuide.layoutFrame
+        
+        // Calculate the width and height of each square in the 4x4 grid
+        let squareWidth = layoutFrame.width / 4
+        let squareHeight = layoutFrame.height / 8
+
         let label = UILabel()
-        label.frame = CGRect(x: point.x, y: point.y, width: 100, height: 20)
-        label.textColor = .white
+        label.frame = CGRect(x: point.x, y: point.y, width: squareWidth, height: squareHeight)
+        label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 14)
         label.textAlignment = .center
         label.text = "0.00 m"
