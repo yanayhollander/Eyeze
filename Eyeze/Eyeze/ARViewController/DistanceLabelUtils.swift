@@ -13,11 +13,11 @@ class DistanceLabelUtils {
     /// Returns an array of CGPoint for placing distance labels on the screen.
     static func getScreenPoints(for view: UIView) -> [CGPoint] {
         let layoutFrame = view.safeAreaLayoutGuide.layoutFrame
-
+        
         // Calculate the width and height of each square in the 4x4 grid
         let squareWidth = layoutFrame.width / 4
         let squareHeight = layoutFrame.height / 8
-
+        
         // Generate the 4x4 grid points
         var points: [CGPoint] = []
         for j in 0..<8 { // Iterate over rows
@@ -31,8 +31,8 @@ class DistanceLabelUtils {
         
         return points
     }
-
-
+    
+    
     static func onDistanceUpdate(distance: Double, detectionDistance: Double, warningDistance: Double, alertDistance: Double) -> DistanceLevel? {
         if (distance < alertDistance) {
             return .alert
@@ -45,7 +45,6 @@ class DistanceLabelUtils {
         return nil
     }
     
-    /// Updates the distance label's text and color based on the distance.
     static func updateDistanceLabel(_ label: UILabel, distance: Float, distanceLevel: DistanceLevel?) {
         // Update the label text to show the distance
         label.text = String(format: "%.2f m", distance)
@@ -57,21 +56,28 @@ class DistanceLabelUtils {
         
         // Ensure distance is clamped to a range of [0.0, 1.0] for color interpolation
         let clampedDistance = max(0.0, min(1.0, CGFloat(distance)))
-        
+        let intensity = 1.0 - clampedDistance // Invert distance for intensity
+
         switch distanceLevel {
         case .alert:
-            // In alert mode, use a shade of red that changes with distance
-            textColor = UIColor.red
+            // In alert mode, use a gradient from orange to light red to strong red
+            textColor = UIColor.white
             alpha = 1.0
-            // Darker red for lower distances, lighter red for higher distances
-            bgColor = UIColor(red: 1.0, green: 1.0 - clampedDistance, blue: 1.0 - clampedDistance, alpha: 0.5)
+            // Gradient from orange to light red to strong red
+            let redComponent = min(1.0, intensity + 1.0) // Red increases with lower distance
+            let greenComponent = max(0.0, 0.5 - intensity) // Green decreases with lower distance
+            let blueComponent = max(0.0, 0.5 - intensity) // Blue decreases with lower distance
+            bgColor = UIColor(red: redComponent, green: greenComponent, blue: blueComponent, alpha: 0.5)
             
         case .warning:
-            // In warning mode, use a shade of orange that changes with distance
-            textColor = UIColor.orange
+            // In warning mode, use a gradient from light yellow to orange
+            textColor = UIColor.black
             alpha = 0.7
-            // Darker orange for lower distances, lighter orange for higher distances
-            bgColor = UIColor(red: 1.0, green: 0.5 + 0.5 * clampedDistance, blue: 0.0, alpha: 0.5)
+            // Gradient from light yellow to orange
+            let redComponent = min(1.0, 1.0 - (0.5 - intensity)) // Red increases with lower distance
+            let greenComponent = min(1.0, 1.0 - (0.5 - intensity)) // Green increases with lower distance
+            let blueComponent = 0.0 // Blue stays at 0
+            bgColor = UIColor(red: redComponent, green: greenComponent, blue: blueComponent, alpha: 0.5)
             
         default:
             // Default mode, no changes
@@ -83,5 +89,4 @@ class DistanceLabelUtils {
         label.textColor = textColor
         label.alpha = alpha
     }
-
 }
