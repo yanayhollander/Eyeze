@@ -22,7 +22,7 @@ protocol AzureAiServiceProtocol {
     var errorMessage: String = ""
     var message: String = ""
     
-    let prompt = """
+    let promptHe = """
                         Consider that a blind person speak in Hebrew is looking at the picture and describe:
                             1) The potential obsticles
                             2) The people and their facial expressions
@@ -47,7 +47,7 @@ protocol AzureAiServiceProtocol {
                             }
                     """
     
-    let promptEn = """
+    let prompt = """
                         Consider that a blind person is looking at the picture and describe:
                             1) The potential obsticles
                             2) The people and their facial expressions

@@ -28,10 +28,41 @@ class DistanceLabelUtils {
         ]
     }
 
+    static func onDistanceUpdate(distance: Double, detectionDistance: Double, warningDistance: Double, alertDistance: Double) -> DistanceLevel? {
+        if (distance < alertDistance) {
+            return .alert
+        } else if distance < warningDistance {
+            return .warning
+        } else if distance < detectionDistance {
+            return .detection
+        }
+        
+        return nil
+    }
+    
     /// Updates the distance label's text and color based on the distance.
-    static func updateDistanceLabel(_ label: UILabel, with hitTestResult: ARHitTestResult, threshold: Double) {
-        let distance = CGFloat(hitTestResult.distance)
+    static func updateDistanceLabel(_ label: UILabel, distance: Float, distanceLevel: DistanceLevel?) {
+ 
         label.text = String(format: "%.2f m", distance)
-        label.textColor = (distance < CGFloat(threshold)) ? UIColor.red : UIColor.white
+        
+        var textColor = UIColor.white
+        var alpha = 0.3
+        
+        switch distanceLevel {
+        case .alert:
+            textColor = UIColor.red
+            alpha = 1.0
+            break
+        case .warning:
+            textColor = UIColor.orange
+            alpha = 0.7
+            break
+        default:
+            break
+        }
+        
+        label.textColor = textColor
+        label.alpha = alpha
+       
     }
 }

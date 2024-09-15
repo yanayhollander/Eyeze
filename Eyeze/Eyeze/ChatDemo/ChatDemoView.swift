@@ -10,7 +10,7 @@ import AVFoundation
 
 struct ChatDemoView: View {
     
-    @State private var speechSynthesizer = AVSpeechSynthesizer() // Initialize directly
+    @State private var speechSynthesizer = AVSpeechSynthesizer()
     @State private var azureAiService: AzureAiService
     @State private var isLoading = false
     @State private var selectedSegment: ChatConfig = .chatCompletion
@@ -89,7 +89,7 @@ struct ChatDemoView: View {
                     }
                     
                     if let response = azureAiService.response {
-                        speak(response: response) // Call the text-to-speech function
+                        response.buildResponseString().speak(speechSynthesizer: speechSynthesizer)
                     }
                 }
             } label: {
@@ -181,43 +181,5 @@ struct ChatDemoView: View {
         return dataUrlString
     }
     
-    func speak(response: OpenAIResponse) {
-        
-        let text = buildResponseString(response: response)
-        let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: "he-IL")
-        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
-        speechSynthesizer.speak(utterance)
-    }
-    
-    func buildResponseString(response: OpenAIResponse) -> String {
-        var result = ""
-        
-        // Iterate over the peopleFacial array with indices
-        for (index, person) in response.peopleFacial.enumerated() {
-            result += "\(String(localized: "person")) \(index + 1):\n"
-            result += "\(String(localized: "location")): \(person.location).\n"
-            result += "\(String(localized: "expression")): \(person.expression).\n"
-        }
-        
-        // Add obstacles if there are any
-        if !response.obstacles.isEmpty {
-            result += "\(String(localized: "obstacles")):\n"
-            for obstacle in response.obstacles {
-                result += "- \(obstacle).\n"
-            }
-        }
-        
-        // Add obstacle keywords if there are any
-        if !response.obstaclesKeywords.isEmpty {
-            result += "\(String(localized: "obstacles_keywords_title")): \(response.obstaclesKeywords.joined(separator: ", ")).\n"
-        }
-        
-        // Add surrounding details if there are any
-        if !response.surrounding.isEmpty {
-            result += "\(String(localized: "surrounding")): \(response.surrounding.joined(separator: ", ")).\n"
-        }
-        
-        return result
-    }
+
 }

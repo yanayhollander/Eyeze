@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVFAudio
 
 extension UIImage {
     func toBase64String() -> String? {
@@ -26,5 +27,14 @@ extension UIImage {
             return nil
         }
         self.init(data: data)
+    }
+}
+
+extension String {
+    func speak(speechSynthesizer: AVSpeechSynthesizer) {
+        let utterance = AVSpeechUtterance(string: self)
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        speechSynthesizer.speak(utterance)
     }
 }

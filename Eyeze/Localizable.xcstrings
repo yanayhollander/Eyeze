@@ -50,6 +50,7 @@
 
     },
     "Detection Distance" : {
+      "extractionState" : "stale",
       "localizations" : {
         "he" : {
           "stringUnit" : {

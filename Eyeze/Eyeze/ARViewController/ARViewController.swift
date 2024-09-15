@@ -19,8 +19,11 @@ struct ARViewContainer: UIViewControllerRepresentable {
 }
 
 class ARViewController: UIViewController, ARSessionDelegate {
+    @State private var speechSynthesizer = AVSpeechSynthesizer()
     @AppStorage("enableVibration") private var enableVibration: Bool = false
-    @AppStorage("obstacleDetectionThreshold") private var obstacleDetectionThreshold: Double = 0.7
+    @AppStorage("detectionDistance") private var detectionDistance: Double = DistanceLevel.DETECTION_DEFAULT_VALUE
+    @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
+    @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
     
     private var azureAiService: AzureAiService = AzureAiService()
     
@@ -73,7 +76,9 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private func drawDistanceLabels() {
         let labelPoints = DistanceLabelUtils.getScreenPoints(for: view)
         distanceLabels = labelPoints.map { createDistanceLabel(at: $0) }
-        distanceLabels.forEach { view.addSubview($0) }
+        distanceLabels.forEach {
+            view.addSubview($0)
+        }
     }
     
     private func setupCaptureContainer() {
@@ -101,6 +106,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
         responseTextView.textColor = .black
         responseTextView.font = UIFont.systemFont(ofSize: 16)
         responseTextView.isHidden = true
+        responseTextView.alpha = 0.7
         captureContainer.addSubview(responseTextView)
         
         // Layout constraints
@@ -115,10 +121,10 @@ class ARViewController: UIViewController, ARSessionDelegate {
             captureButton.widthAnchor.constraint(equalToConstant: 200),
             captureButton.bottomAnchor.constraint(equalTo: captureContainer.bottomAnchor, constant: -10), // Added bottom constraint
             
-            responseTextView.topAnchor.constraint(equalTo: captureContainer.topAnchor),
+            responseTextView.topAnchor.constraint(equalTo: captureButton.bottomAnchor, constant: 16),
             responseTextView.leftAnchor.constraint(equalTo: captureContainer.leftAnchor, constant: 30),
-            responseTextView.heightAnchor.constraint(equalToConstant: 70),
-            responseTextView.rightAnchor.constraint(equalTo: captureButton.leftAnchor, constant: -30)
+            responseTextView.heightAnchor.constraint(equalToConstant: 180),
+            responseTextView.rightAnchor.constraint(equalTo: captureContainer.rightAnchor, constant: -30)
         ])
     }
     
@@ -133,13 +139,27 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 let distance = Float(result.distance)
                 closestDistance = min(closestDistance, distance)
                 
-                DistanceLabelUtils.updateDistanceLabel(distanceLabels[index], with: result, threshold: obstacleDetectionThreshold)
+                let distanceLevel = DistanceLabelUtils.onDistanceUpdate(
+                    distance: Double(distance),
+                    detectionDistance: detectionDistance,
+                    warningDistance: warningDistance,
+                    alertDistance: alertDistance)
+                
+                DistanceLabelUtils.updateDistanceLabel(distanceLabels[index], distance: distance, distanceLevel: distanceLevel)
+                
+                guard let distanceLevel = distanceLevel else { return }
+                
+                switch distanceLevel {
+                case .detection:
+                    break
+                case .warning:
+                    triggerHapticFeedback()
+                case .alert:
+                    triggerHapticFeedback()
+                }
             }
         }
-        
-        if closestDistance < Float(obstacleDetectionThreshold) {
-            triggerHapticFeedback()
-        }
+    
     }
     
     private func triggerHapticFeedback() {
@@ -202,8 +222,9 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 print("Scene description successfully retrieved.")
                 if let response = azureAiService.response {
                     DispatchQueue.main.async {
-                        
-                        self.responseTextView.text = String(describing: response)
+                        let responseString = response.buildResponseString()
+                        self.responseTextView.text = responseString
+                        responseString.speak(speechSynthesizer: self.speechSynthesizer)
                     }
                     
                 }

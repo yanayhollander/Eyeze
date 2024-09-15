@@ -9,11 +9,13 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("enableVibration") private var enableVibration: Bool = false
-    @AppStorage("obstacleDetectionThreshold") private var sliderValue: Double = 0.5
+    @AppStorage("detectionDistance") private var detectionDistance: Double = DistanceLevel.DETECTION_DEFAULT_VALUE
+    @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
+    @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
     @AppStorage("selectedLanguage") private var selectedLanguage: String = LanguageManager.shared.currentLanguage
-
+    
     @ObservedObject private var languageManager = LanguageManager.shared
-
+    
     var body: some View {
         Form {
             Section(header: Text(languageManager.localizedString(forKey: "Settings"))) {
@@ -21,9 +23,14 @@ struct SettingsView: View {
                     Text(languageManager.localizedString(forKey: "Enable Vibration"))
                 }
                 
-                Text("\(languageManager.localizedString(forKey: "Detection Distance")): \(sliderValue, specifier: "%.2f")")
-                Slider(value: $sliderValue, in: 0...1, step: 0.01) {
-                    Text(languageManager.localizedString(forKey: "Detection Distance"))
+                // Distance Thresholds
+                ForEach(DistanceLevel.allCases) { level in
+                    VStack(alignment: .leading) {
+                        Text("\(languageManager.localizedString(forKey: "\(level.rawValue) Distance")): \(distance(for: level), specifier: "%.2f")")
+                        Slider(value: distanceBinding(for: level), in: 0...2, step: 0.01) {
+                            Text(languageManager.localizedString(forKey: "\(level.rawValue) Distance"))
+                        }
+                    }
                 }
             }
             
@@ -37,6 +44,29 @@ struct SettingsView: View {
                     languageManager.setLanguage(newLanguage)
                 }
             }
+        }
+    }
+    
+    private func distance(for level: DistanceLevel) -> Double {
+        switch level {
+        case .detection:
+            return detectionDistance
+        case .warning:
+            return warningDistance
+        case .alert:
+            return alertDistance
+        }
+    
+    }
+    
+    private func distanceBinding(for level: DistanceLevel) -> Binding<Double> {
+        switch level {
+        case .detection:
+            return Binding<Double>(get: { detectionDistance }, set: { detectionDistance = $0 })
+        case .warning:
+            return Binding<Double>(get: { warningDistance }, set: { warningDistance = $0 })
+        case .alert:
+            return Binding<Double>(get: { alertDistance }, set: { alertDistance = $0 })
         }
     }
 }
