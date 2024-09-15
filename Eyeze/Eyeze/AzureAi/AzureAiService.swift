@@ -38,7 +38,7 @@ protocol AzureAiServiceProtocol {
                             for example:
                             {
                                 peopleFacial: [{
-                                    location: "ימין",
+                                    location: "ימין למעלה",
                                     expression: "מפוקס"
                                 }],
                                 obstacles: ["נוכחות של רובוט עלולה לבלבל", "המחשב יכול לגרום לקושי בהנחה על השולחן.", "הדלת של הארון. פתוחה."],

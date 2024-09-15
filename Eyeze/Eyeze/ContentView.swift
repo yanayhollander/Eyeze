@@ -11,16 +11,18 @@ import UIKit
 
 
 struct ContentView: View {
+    @ObservedObject private var languageManager = LanguageManager.shared
+    
     var body: some View {
         TabView {
             HomeView()
                 .tabItem {
-                    Label("Home", systemImage: "house.fill")
+                    Label(languageManager.localizedString(forKey: "Home"), systemImage: "house.fill")
                 }
             
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape.fill")
+                    Label(languageManager.localizedString(forKey: "Settings"), systemImage: "gearshape.fill")
                 }
         }
     }

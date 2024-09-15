@@ -17,6 +17,8 @@
 		F45931902C8F3B9400DA4FC3 /* AzureAiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459318F2C8F3B9400DA4FC3 /* AzureAiService.swift */; };
 		F45931932C8F421E00DA4FC3 /* OpenAIResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931922C8F421E00DA4FC3 /* OpenAIResponse.swift */; };
 		F45931962C8F529700DA4FC3 /* UtilsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931952C8F529700DA4FC3 /* UtilsExtensions.swift */; };
+		F45931982C96BD3200DA4FC3 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F45931972C96BD3200DA4FC3 /* Localizable.xcstrings */; };
+		F459319B2C96D04600DA4FC3 /* LanguageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459319A2C96D04600DA4FC3 /* LanguageManager.swift */; };
 		F46C8C7B2C8B3A3900978CE7 /* EyezeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */; };
 		F46C8C7F2C8B3A3A00978CE7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */; };
 		F46C8C832C8B3A3A00978CE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C822C8B3A3A00978CE7 /* Preview Assets.xcassets */; };
@@ -36,6 +38,8 @@
 		F459318F2C8F3B9400DA4FC3 /* AzureAiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureAiService.swift; sourceTree = "<group>"; };
 		F45931922C8F421E00DA4FC3 /* OpenAIResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIResponse.swift; sourceTree = "<group>"; };
 		F45931952C8F529700DA4FC3 /* UtilsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilsExtensions.swift; sourceTree = "<group>"; };
+		F45931972C96BD3200DA4FC3 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F459319A2C96D04600DA4FC3 /* LanguageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanguageManager.swift; sourceTree = "<group>"; };
 		F46C8C772C8B3A3900978CE7 /* Eyeze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eyeze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyezeApp.swift; sourceTree = "<group>"; };
 		F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -95,6 +99,7 @@
 		F46C8C6E2C8B3A3900978CE7 = {
 			isa = PBXGroup;
 			children = (
+				F45931972C96BD3200DA4FC3 /* Localizable.xcstrings */,
 				F45931682C8EED1F00DA4FC3 /* Config.xcconfig */,
 				F46C8C792C8B3A3900978CE7 /* Eyeze */,
 				F46C8C782C8B3A3900978CE7 /* Products */,
@@ -125,6 +130,7 @@
 				F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */,
 				F46C8C802C8B3A3A00978CE7 /* Eyeze.entitlements */,
 				F46C8C812C8B3A3A00978CE7 /* Preview Content */,
+				F459319A2C96D04600DA4FC3 /* LanguageManager.swift */,
 			);
 			path = Eyeze;
 			sourceTree = "<group>";
@@ -192,6 +198,7 @@
 			knownRegions = (
 				en,
 				Base,
+				he,
 			);
 			mainGroup = F46C8C6E2C8B3A3900978CE7;
 			packageReferences = (
@@ -213,6 +220,7 @@
 			files = (
 				F46C8C832C8B3A3A00978CE7 /* Preview Assets.xcassets in Resources */,
 				F46C8C7F2C8B3A3A00978CE7 /* Assets.xcassets in Resources */,
+				F45931982C96BD3200DA4FC3 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,6 +232,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F459318E2C8F36A000DA4FC3 /* AzureAiConfig.swift in Sources */,
+				F459319B2C96D04600DA4FC3 /* LanguageManager.swift in Sources */,
 				F45931962C8F529700DA4FC3 /* UtilsExtensions.swift in Sources */,
 				F45931902C8F3B9400DA4FC3 /* AzureAiService.swift in Sources */,
 				F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */,

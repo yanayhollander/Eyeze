@@ -107,17 +107,17 @@ struct ChatDemoView: View {
                     // Iterate over peopleFacial
                     ForEach(response.peopleFacial.indices, id: \.self) { index in
                         let person = response.peopleFacial[index]
-                        Text("איש \(index + 1):")
+                        Text("\(String(localized: "person")) \(index + 1):")
                             .font(.subheadline)
                             .bold()
-                        Text("מיקום: \(person.location)")
+                        Text("\(String(localized: "location")): \(person.location)")
                             .padding(.leading, 8)
-                        Text("הבעת פנים: \(person.expression)")
+                        Text("\(String(localized: "expression")): \(person.expression)")
                             .padding(.leading, 8)
                     }
                     
                     if !response.obstacles.isEmpty {
-                        Text("מכשולים:")
+                        Text("\(String(localized: "obstacles")):")
                             .font(.subheadline)
                             .bold()
                             .padding(.top, 4)
@@ -128,7 +128,7 @@ struct ChatDemoView: View {
                     }
                     
                     if !response.obstaclesKeywords.isEmpty {
-                        Text("מכשולים פוטנציאלים:")
+                        Text("\(String(localized: "obstacles_keywords_title")):")
                             .font(.subheadline)
                             .bold()
                             .padding(.top, 4)
@@ -137,7 +137,7 @@ struct ChatDemoView: View {
                     }
                     
                     if !response.surrounding.isEmpty {
-                        Text("סביבה:")
+                        Text("\(String(localized: "surrounding")):")
                             .font(.subheadline)
                             .bold()
                             .padding(.top, 4)
@@ -195,14 +195,14 @@ struct ChatDemoView: View {
         
         // Iterate over the peopleFacial array with indices
         for (index, person) in response.peopleFacial.enumerated() {
-            result += "איש \(index + 1):\n"
-            result += "מיקום: \(person.location).\n"
-            result += "הבעת פנים: \(person.expression).\n"
+            result += "\(String(localized: "person")) \(index + 1):\n"
+            result += "\(String(localized: "location")): \(person.location).\n"
+            result += "\(String(localized: "expression")): \(person.expression).\n"
         }
         
         // Add obstacles if there are any
         if !response.obstacles.isEmpty {
-            result += "מכשולים:\n"
+            result += "\(String(localized: "obstacles")):\n"
             for obstacle in response.obstacles {
                 result += "- \(obstacle).\n"
             }
@@ -210,12 +210,12 @@ struct ChatDemoView: View {
         
         // Add obstacle keywords if there are any
         if !response.obstaclesKeywords.isEmpty {
-            result += "מכשולים פוטנציאלים: \(response.obstaclesKeywords.joined(separator: ", ")).\n"
+            result += "\(String(localized: "obstacles_keywords_title")): \(response.obstaclesKeywords.joined(separator: ", ")).\n"
         }
         
         // Add surrounding details if there are any
         if !response.surrounding.isEmpty {
-            result += "סביבה: \(response.surrounding.joined(separator: ", ")).\n"
+            result += "\(String(localized: "surrounding")): \(response.surrounding.joined(separator: ", ")).\n"
         }
         
         return result
