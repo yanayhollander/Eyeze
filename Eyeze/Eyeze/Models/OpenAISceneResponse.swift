@@ -5,7 +5,7 @@
 //  Created by Yanay Hollander on 09/09/2024.
 //
 
-struct OpenAIResponse: Codable {
+struct OpenAISceneResponse: Codable {
     let peopleFacial: [Person]
     let obstacles: [String]
     let obstaclesKeywords: [String]

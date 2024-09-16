@@ -40,15 +40,6 @@
         }
       }
     },
-    "Cancel stream" : {
-
-    },
-    "Chat Completion" : {
-
-    },
-    "Chat Completion stream" : {
-
-    },
     "Detection Distance" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -306,6 +297,7 @@
       }
     },
     "Options" : {
+      "extractionState" : "stale",
       "localizations" : {
         "he" : {
           "stringUnit" : {

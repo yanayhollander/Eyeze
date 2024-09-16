@@ -36,11 +36,20 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private var captureButton: UIButton!
     private var responseTextView: UITextView!
     
+    private var responseText: String = ""
+    private var processingText: String = ""
+    private var promptText: String = ""
+    
     // Store the last notification times for different texts
     private var lastNotificationTimes: [String: Date] = [:]
     private let DEBOUNCE_INTERVAL = 1.0
     
     private var hasDrawnDistanceLabels = false
+    // Property to store the index of the closest cell
+    private var closestSquare: (Int?, Float)?
+    
+    private var timer: Timer?
+    private var elapsedTime: TimeInterval = 0.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,7 +128,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
         responseTextView.backgroundColor = .lightGray
         responseTextView.textColor = .black
         responseTextView.font = UIFont.systemFont(ofSize: 16)
-        responseTextView.isHidden = true
+        responseTextView.isHidden = false  // Make sure it's not hidden
         responseTextView.alpha = 0.7
         captureContainer.addSubview(responseTextView)
         
@@ -128,17 +137,17 @@ class ARViewController: UIViewController, ARSessionDelegate {
             captureContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             captureContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             captureContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
+            captureContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16), // Ensure it stretches to the bottom
             
             captureButton.topAnchor.constraint(equalTo: captureContainer.topAnchor),
-            captureButton.rightAnchor.constraint(equalTo: captureContainer.rightAnchor, constant: -30),
+            captureButton.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -30),
             captureButton.heightAnchor.constraint(equalToConstant: 50),
             captureButton.widthAnchor.constraint(equalToConstant: 200),
-            captureButton.bottomAnchor.constraint(equalTo: captureContainer.bottomAnchor, constant: -10), // Added bottom constraint
             
             responseTextView.topAnchor.constraint(equalTo: captureButton.bottomAnchor, constant: 16),
-            responseTextView.leftAnchor.constraint(equalTo: captureContainer.leftAnchor, constant: 30),
-            responseTextView.heightAnchor.constraint(equalToConstant: 180),
-            responseTextView.rightAnchor.constraint(equalTo: captureContainer.rightAnchor, constant: -30)
+            responseTextView.leadingAnchor.constraint(equalTo: captureContainer.leadingAnchor, constant: 16),
+            responseTextView.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -16),
+            responseTextView.bottomAnchor.constraint(equalTo: captureContainer.bottomAnchor, constant: -16)
         ])
     }
     
@@ -146,7 +155,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private func detectMultiplePoints() {
         let screenPoints = DistanceUtils.getScreenPoints(for: view)
         var closestDistance: Float = .infinity
-        
+        var closestSquareIndex: Int?
         var detectedResults: [DistanceResult] = []
         
         // Iterate through all screen points
@@ -155,6 +164,11 @@ class ARViewController: UIViewController, ARSessionDelegate {
             if let result = hitTestResults.first {
                 let distance = Float(result.distance)
                 closestDistance = min(closestDistance, distance)
+                
+                // Keep track of the index with the closest distance
+                if distance == closestDistance {
+                    closestSquareIndex = index
+                }
                 
                 // Get distance result
                 let distanceResult = DistanceUtils.onDistanceUpdate(
@@ -165,7 +179,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     screenPoints: screenPoints,
                     point: point
                 )
-                                
+                
                 detectedResults.append(distanceResult)
             }
         }
@@ -175,7 +189,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 // Update the distance label
                 DistanceUtils.updateDistanceLabel(self.distanceLabels[index], distance: point.distance ?? .infinity, distanceLevel: point.level)
             }
-        
+            
             // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
             if detectedResults.isTop() {
                 self.notify("TOP")
@@ -188,6 +202,9 @@ class ARViewController: UIViewController, ARSessionDelegate {
             if detectedResults.isBottom() {
                 self.notify("Bottom")
             }
+            
+            // Store the closest cell index for later use
+            self.closestSquare = (closestSquareIndex, closestDistance)
         }
     }
     
@@ -197,10 +214,10 @@ class ARViewController: UIViewController, ARSessionDelegate {
             // If the same text was notified less than an interval, ignore it
             return
         }
-
+        
         // Update the last notification time for this text
         lastNotificationTimes[text] = now
-
+        
         // Perform the notification
         print(text)
     }
@@ -213,19 +230,19 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     // MARK: - Helper Methods
     private func createDistanceLabel(for view: UIView, at point: CGPoint) -> UILabel {
-            let layoutFrame = view.safeAreaLayoutGuide.layoutFrame
-            
-            // Calculate the width and height of each square in the 4x4 grid
-            let squareWidth = layoutFrame.width / 4
-            let squareHeight = layoutFrame.height / 8
-
-            let label = UILabel()
-            label.frame = CGRect(x: point.x, y: point.y, width: squareWidth, height: squareHeight)
-            label.textColor = .black
-            label.font = UIFont.systemFont(ofSize: 14)
-            label.textAlignment = .center
-            return label
-        }
+        let layoutFrame = view.safeAreaLayoutGuide.layoutFrame
+        
+        // Calculate the width and height of each square in the 4x4 grid
+        let squareWidth = layoutFrame.width / 4
+        let squareHeight = layoutFrame.height / 8
+        
+        let label = UILabel()
+        label.frame = CGRect(x: point.x, y: point.y, width: squareWidth, height: squareHeight)
+        label.textColor = .black
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textAlignment = .center
+        return label
+    }
     
     private func captureCurrentFrame() -> ARFrame? {
         guard let currentFrame = arView.session.currentFrame else {
@@ -254,6 +271,8 @@ class ARViewController: UIViewController, ARSessionDelegate {
             return
         }
         
+        startTimer()
+        
         Task {
             do {
                 guard let image = convertFrameToUIImage(arFrame),
@@ -262,27 +281,67 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     return
                 }
                 
+                
+                guard let square = closestSquare else { return }
+                
+                let squareIndex: Int =  square.0 ?? 14
+                let distance: Float = square.1
+                let prompt = Prompt.obstacles(square: squareIndex, distance: distance).text()
+                
                 DispatchQueue.main.async {
                     self.responseTextView.isHidden = false
-                    self.responseTextView.text = "Loading..."
+                    self.promptText = prompt
+                    self.updateResponseTextView()
                 }
-                try await azureAiService.describeScene(base64Image: base64Image)
-                print("Scene description successfully retrieved.")
-                if let response = azureAiService.response {
-                    DispatchQueue.main.async {
+                
+                let azureAIResponse = try await azureAiService.describeObstacles(base64Image: base64Image, prompt: prompt)
+     
+                print("describeObstacles description successfully retrieved.")
+                
+                DispatchQueue.main.async {
+                    self.stopTimer() // Stop the timer when the response is received
+                    if let response = azureAIResponse.response {
                         let responseString = response.buildResponseString()
-                        self.responseTextView.text = responseString
+                        self.responseText = responseString
+                        self.updateResponseTextView()
                         responseString.speak(speechSynthesizer: self.speechSynthesizer)
                     }
-                    
                 }
-                // Update the TextView with the response
             } catch {
-                print("Failed to describe scene: \(error.localizedDescription)")
+                print("Failed to describe obstacles: \(error.localizedDescription)")
                 DispatchQueue.main.async {
-                    self.responseTextView.text = "Failed to describe scene: \(error.localizedDescription)"
+                    self.responseTextView.text = "\(self.processingText)\nFailed to describe obstacles: \(error.localizedDescription)"
                 }
             }
         }
+    }
+    
+    private func startTimer() {
+        elapsedTime = 0.0
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+    }
+    
+    @objc private func updateTimer() {
+        elapsedTime += 0.1
+        processingText = String(format: "Processing... %.1f seconds", elapsedTime)
+        updateResponseTextView()
+        
+    }
+    
+    func updateResponseTextView() {
+        responseTextView.text = """
+                                \(processingText)
+                                Prompt:\n
+                                \(promptText)
+                                \n\n
+                                Response:\n
+                                \(responseText)
+                                """
+        responseTextView.scrollRangeToVisible(NSRange(location: responseTextView.text.count - 1, length: 1))
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
     }
 }

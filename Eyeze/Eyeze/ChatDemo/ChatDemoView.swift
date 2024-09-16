@@ -13,12 +13,14 @@ struct ChatDemoView: View {
     @State private var speechSynthesizer = AVSpeechSynthesizer()
     @State private var azureAiService: AzureAiService
     @State private var isLoading = false
-    @State private var selectedSegment: ChatConfig = .chatCompletion
     @State private var base64ImageString: String?
-    
+    @State private var errorMessage: String = ""
+    // Replace T with the expected response type, e.g., OpenAISceneResponse
+    @State private var azureAIResponse: OpenAISceneResponse? = nil
+
     enum ChatConfig {
         case chatCompletion
-        case chatCompeltionStream
+        case chatCompletionStream
     }
     
     init() {
@@ -28,7 +30,6 @@ struct ChatDemoView: View {
     var body: some View {
         ScrollView {
             VStack {
-                picker
                 textArea
                 if let base64String = base64ImageString {
                     if let uiImage = UIImage(base64String: base64String) {
@@ -41,14 +42,9 @@ struct ChatDemoView: View {
                         Text("Failed to load image")
                     }
                 }
-                Text(azureAiService.errorMessage)
+                Text(errorMessage)
                     .foregroundColor(.red)
-                switch selectedSegment {
-                case .chatCompeltionStream:
-                    streamedChatResultView
-                case .chatCompletion:
-                    chatCompletionResultView
-                }
+                chatCompletionResultView
             }
         }
         .overlay(
@@ -61,15 +57,7 @@ struct ChatDemoView: View {
             }
         )
     }
-    
-    var picker: some View {
-        Picker("Options", selection: $selectedSegment) {
-            Text("Chat Completion").tag(ChatConfig.chatCompletion)
-            Text("Chat Completion stream").tag(ChatConfig.chatCompeltionStream)
-        }
-        .pickerStyle(SegmentedPickerStyle())
-        .padding()
-    }
+
     
     var textArea: some View {
         HStack(spacing: 4) {
@@ -80,16 +68,14 @@ struct ChatDemoView: View {
                     
                     let image = loadTestImage(name: "testImage2")
                     base64ImageString = image
+  
+                    let result = try await azureAiService.describeScene(base64Image: image, prompt: Prompt.scene.text())
                     
-                    switch selectedSegment {
-                    case .chatCompletion:
-                        try await azureAiService.describeScene(base64Image: image)
-                    case .chatCompeltionStream:
-                        try await azureAiService.describeScene(base64Image: image)
-                    }
-                    
-                    if let response = azureAiService.response {
+                    if let response = result.response {
+                        azureAIResponse = response
                         response.buildResponseString().speak(speechSynthesizer: speechSynthesizer)
+                    } else if let error = result.errorMessage {
+                        errorMessage = error
                     }
                 }
             } label: {
@@ -101,7 +87,7 @@ struct ChatDemoView: View {
     }
     
     var chatCompletionResultView: some View {
-        if let response = azureAiService.response {
+        if let response = azureAIResponse {
             return AnyView(
                 VStack(alignment: .leading, spacing: 8) {
                     // Iterate over peopleFacial
@@ -157,15 +143,7 @@ struct ChatDemoView: View {
             return AnyView(Text(""))
         }
     }
-    
-    var streamedChatResultView: some View {
-        VStack {
-            Button("Cancel stream") {
-                // Cancel stream logic
-            }
-            Text(azureAiService.message)
-        }
-    }
+
     
     func loadTestImage(name: String) -> String {
         guard let image = UIImage(named: name) else {
@@ -180,6 +158,4 @@ struct ChatDemoView: View {
         let dataUrlString = "data:\(mediaType);base64,\(imageData.base64EncodedString())"
         return dataUrlString
     }
-    
-
 }
