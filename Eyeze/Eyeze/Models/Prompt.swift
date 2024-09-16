@@ -27,7 +27,7 @@ enum Prompt {
 }
 
 private let OBSTACLE = """
- The given image is logically divide into 8x4 grid as:
+    The given image is logically divide into 8x4 grid as:
     [[ 0,  1,  2,  3],
      [ 4,  5,  6,  7],
      [ 8,  9, 10, 11],
@@ -54,37 +54,23 @@ private let OBSTACLE = """
     - Do guide only for the nearest obstacle
     - Do use human step instead of meter
     - Do mention the obstcale title like its name (e.g. Table, Banana)
-    - Do short guidence
+    - Do short guidance
     - Don't guide to step back if you see something in front of you, give guide to move around it from left or right instead
 
-    Guidence example: You have a table in your center left side, pls move one step to the right
+    Guidance example: You have a table in your center left side, pls move one step to the right
 """
 
 
 
 let SCENE = """
-    Consider that a blind person is looking at the picture and describe:
-        1) The potential obsticles
-        2) The people and their facial expressions
-        3) My surrounding
-        Provide a json response according to the following format:
-        {
-            peopleFacial: "array of object for each person with his location in the picture and it's facial expression in keywords",
-            obstacles: "array of strings describe the obstacles in the picture",
-            obstaclesKeywords: "array of strings describes the obstacles in keywords"
-            surrounding: "array of strings describe the surrounding in keywords",
-        }
-
-        for example:
-        {
-            peopleFacial: [{
-                location: "top left",
-                expression: "focused"
-            }],
-            obstacles: ["The desktop computer and surroundings might create a cluttered space", "potentially limiting movement.", "The robot's presence could also be intimidating."],
-            obstaclesKeywords: ["desktop computer", "clutter", "robot presence"],
-            surrounding: ["modern office environment", "city skyline view", "high tech decor", "blue lighting"]
-        }
+    Describe the image for your's blind friend like he is inside of the image.
+    Guidance:
+    - Don't repeat yourself
+    - Don't use the word image
+    - Write it short, 3 sentence max.
+    - Describe the facial expressions generally
+    - Put your's friend inside of the description
+    - Don't describe your's friend feelings
 """
 
 
