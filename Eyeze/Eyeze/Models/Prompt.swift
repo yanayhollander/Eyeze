@@ -55,6 +55,7 @@ private let OBSTACLE = """
     - Do use human step instead of meter
     - Do mention the obstcale title like its name (e.g. Table, Banana)
     - Do short guidence
+    - Don't guide to step back if you see something in front of you, give guide to move around it from left or right instead
 
     Guidence example: You have a table in your center left side, pls move one step to the right
 """
