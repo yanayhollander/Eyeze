@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("enableVibration") private var enableVibration: Bool = false
+    @AppStorage("enableVibration") private var enableVibration: Bool = true
     @AppStorage("detectionDistance") private var detectionDistance: Double = DistanceLevel.DETECTION_DEFAULT_VALUE
     @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
     @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
@@ -27,7 +27,7 @@ struct SettingsView: View {
                 ForEach(DistanceLevel.allCases) { level in
                     VStack(alignment: .leading) {
                         Text("\(languageManager.localizedString(forKey: "\(level.rawValue) Distance")): \(distance(for: level), specifier: "%.2f")")
-                        Slider(value: distanceBinding(for: level), in: 0...2, step: 0.01) {
+                        Slider(value: distanceBinding(for: level), in: 0...5, step: 0.1) {
                             Text(languageManager.localizedString(forKey: "\(level.rawValue) Distance"))
                         }
                     }

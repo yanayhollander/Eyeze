@@ -20,7 +20,7 @@ struct ARViewContainer: UIViewControllerRepresentable {
 
 class ARViewController: UIViewController, ARSessionDelegate {
     @State private var speechSynthesizer = AVSpeechSynthesizer()
-    @AppStorage("enableVibration") private var enableVibration: Bool = false
+    @AppStorage("enableVibration") private var enableVibration: Bool = true
     @AppStorage("detectionDistance") private var detectionDistance: Double = DistanceLevel.DETECTION_DEFAULT_VALUE
     @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
     @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
@@ -91,7 +91,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     private func setupHapticFeedback() {
-        hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .medium)
+        hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
         hapticFeedbackGenerator?.prepare()
     }
     
@@ -180,10 +180,13 @@ class ARViewController: UIViewController, ARSessionDelegate {
         DispatchQueue.main.async {
             for(index, point) in self.detectedResults.enumerated() {
                 // Update the distance label
-                DistanceUtils.updateDistanceLabel(self.distanceLabels[index], distance: point.distance ?? .infinity, distanceLevel: point.level)
+                DistanceUtils.updateDistanceLabel(self.distanceLabels[index], distance: point.distance, distanceLevel: point.level)
             }
             
-//            // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
+            if (self.detectedResults.shouldAlert(distance: self.alertDistance)) {
+                self.triggerHapticFeedback()
+            }
+            // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
 //            if self.detectedResults.isTop() {
 //                self.notify("TOP")
 //            }
@@ -214,6 +217,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     private func triggerHapticFeedback() {
         if enableVibration {
+            self.notify("FIRE!!")
             hapticFeedbackGenerator?.impactOccurred()
         }
     }
@@ -260,7 +264,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
             print("Failed to capture image.")
             return
         }
-        
+
         startTimer()
         
         Task {

@@ -3,14 +3,6 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "ChatDemoView.init():ChatDemoView.swift">
-         <PersistentStrings>
-            <PersistentString
-               value = "infoDictionary[&quot;AzureAIResourceName&quot;]">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
          contextName = "static DistanceUtils.onDistanceUpdate(distance:detectionDistance:warningDistance:alertDistance:screenPoints:point:):DistanceUtils.swift">
          <PersistentStrings>
             <PersistentString
@@ -20,6 +12,28 @@
                value = "distanceResult.level">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in ARViewController.detectMultiplePoints():ARViewController.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self.detectedResults">
+            </PersistentString>
+            <PersistentString
+               value = "self.alertDistance">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ChatDemoView.init():ChatDemoView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "infoDictionary[&quot;AzureAIResourceName&quot;]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ARViewController.detectMultiplePoints():ARViewController.swift">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

@@ -36,5 +36,117 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "65E7DFDC-D736-464B-89A0-16DBFE5A431C"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Eyeze/AzureAi/AzureAiService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
+            landmarkName = "describe(base64Image:prompt:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A21DC208-2965-4BA7-8387-2CCEEE9EA593"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Eyeze/AzureAi/AzureAiService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
+            landmarkName = "describe(base64Image:prompt:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "A21DC208-2965-4BA7-8387-2CCEEE9EA593 - e401e807fd67c0d1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Eyeze.AzureAiService.describe&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(base64Image: Swift.String, prompt: Swift.String) async throws -&gt; (response: Swift.Optional&lt;&#x3c4;_0_0&gt;, errorMessage: Swift.Optional&lt;Swift.String&gt;)"
+                  moduleName = "Eyeze"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/home/Projects/Eyeze/Eyeze/Eyeze/AzureAi/AzureAiService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
+                  offsetFromSymbolStart = "3036">
+               </Location>
+               <Location
+                  uuid = "A21DC208-2965-4BA7-8387-2CCEEE9EA593 - c2305a97ab9262d0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Eyeze.AzureAiService.describe&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(base64Image: Swift.String, prompt: Swift.String) async throws -&gt; (response: Swift.Optional&lt;&#x3c4;_0_0&gt;, errorMessage: Swift.Optional&lt;Swift.String&gt;)"
+                  moduleName = "Eyeze"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/home/Projects/Eyeze/Eyeze/Eyeze/AzureAi/AzureAiService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "73"
+                  endingLineNumber = "73"
+                  offsetFromSymbolStart = "624">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DD32E111-30A7-4A20-9279-CFB5FD47BB02"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Eyeze/AzureAi/AzureAiService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
+            landmarkName = "describe(base64Image:prompt:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "DD32E111-30A7-4A20-9279-CFB5FD47BB02 - e401e807fd67c093"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for Eyeze.AzureAiService.describe&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(base64Image: Swift.String, prompt: Swift.String) async throws -&gt; (response: Swift.Optional&lt;&#x3c4;_0_0&gt;, errorMessage: Swift.Optional&lt;Swift.String&gt;)"
+                  moduleName = "Eyeze"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/home/Projects/Eyeze/Eyeze/Eyeze/AzureAi/AzureAiService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "75"
+                  endingLineNumber = "75"
+                  offsetFromSymbolStart = "3512">
+               </Location>
+               <Location
+                  uuid = "DD32E111-30A7-4A20-9279-CFB5FD47BB02 - c2305a97ab926292"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(4) suspend resume partial function for Eyeze.AzureAiService.describe&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable&gt;(base64Image: Swift.String, prompt: Swift.String) async throws -&gt; (response: Swift.Optional&lt;&#x3c4;_0_0&gt;, errorMessage: Swift.Optional&lt;Swift.String&gt;)"
+                  moduleName = "Eyeze"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/home/Projects/Eyeze/Eyeze/Eyeze/AzureAi/AzureAiService.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "75"
+                  endingLineNumber = "75"
+                  offsetFromSymbolStart = "1104">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

@@ -12,8 +12,8 @@ struct ScreenPoints {
     var top: [CGPoint]
     var center: [CGPoint]
     var bottom: [CGPoint]
-//    var left: [CGPoint]
-//    var right: [CGPoint]
+    //    var left: [CGPoint]
+    //    var right: [CGPoint]
     var all: [CGPoint] {
         return top + center + bottom
     }
@@ -75,7 +75,7 @@ class DistanceUtils {
         
         return distanceResult
     }
-
+    
     private static func getCellIndex(for point: CGPoint, in screenPoints: ScreenPoints) -> Int? {
         // Mapping each point to its corresponding cell index (1-9)
         let allPoints = screenPoints.top + screenPoints.center + screenPoints.bottom
@@ -87,46 +87,46 @@ class DistanceUtils {
     
     /// Updates the distance label's text and color based on the distance.
     static func updateDistanceLabel(_ label: UILabel, distance: Double, distanceLevel: DistanceLevel?) {
-            // Update the label text to show the distance
-            label.text = String(format: "%.2f m", distance)
+        // Update the label text to show the distance
+        label.text = String(format: "%.2f m", distance)
+        
+        // Set default values for background color and text color
+        var bgColor = UIColor(white: 1.0, alpha: 0.0) // Light gray background with some transparency
+        var textColor = UIColor.white
+        // Ensure distance is clamped to a range of [0.0, 1.0] for color interpolation
+        let clampedDistance = max(0.0, min(1.0, CGFloat(distance)))
+        let intensity = 1.0 - clampedDistance // Invert distance for intensity
+        
+        switch distanceLevel {
+        case .alert:
+            // In alert mode, use a gradient from orange to light red to strong red
+            textColor = UIColor.white
+            // Gradient from orange to light red to strong red
+            let redComponent = min(1.0, intensity + 1.0) // Red increases with lower distance
+            let greenComponent = max(0.0, 0.5 - intensity) // Green decreases with lower distance
+            let blueComponent = max(0.0, 0.5 - intensity) // Blue decreases with lower distance
+            bgColor = UIColor(red: redComponent, green: greenComponent, blue: blueComponent, alpha: 0.5)
+            break
             
-            // Set default values for background color and text color
-            var bgColor = UIColor(white: 1.0, alpha: 0.0) // Light gray background with some transparency
-            var textColor = UIColor.white
-            // Ensure distance is clamped to a range of [0.0, 1.0] for color interpolation
-            let clampedDistance = max(0.0, min(1.0, CGFloat(distance)))
-            let intensity = 1.0 - clampedDistance // Invert distance for intensity
-
-            switch distanceLevel {
-            case .alert:
-                // In alert mode, use a gradient from orange to light red to strong red
-                textColor = UIColor.white
-                // Gradient from orange to light red to strong red
-                let redComponent = min(1.0, intensity + 1.0) // Red increases with lower distance
-                let greenComponent = max(0.0, 0.5 - intensity) // Green decreases with lower distance
-                let blueComponent = max(0.0, 0.5 - intensity) // Blue decreases with lower distance
-                bgColor = UIColor(red: redComponent, green: greenComponent, blue: blueComponent, alpha: 0.5)
-                break
-                
-            case .warning:
-                // In warning mode, use a gradient from light yellow to orange
-                textColor = UIColor.black
-                // Gradient from light yellow to orange
-                let redComponent = min(1.0, 1.0 - (0.5 - intensity)) // Red increases with lower distance
-                let greenComponent = min(1.0, 1.0 - (0.5 - intensity)) // Green increases with lower distance
-                let blueComponent = 0.0 // Blue stays at 0
-                bgColor = UIColor(red: redComponent, green: greenComponent, blue: blueComponent, alpha: 0.5)
-                break
-                
-            default:
-                // Default mode, no changes
-                break
-            }
+        case .warning:
+            // In warning mode, use a gradient from light yellow to orange
+            textColor = UIColor.black
+            // Gradient from light yellow to orange
+            let redComponent = min(1.0, 1.0 - (0.5 - intensity)) // Red increases with lower distance
+            let greenComponent = min(1.0, 1.0 - (0.5 - intensity)) // Green increases with lower distance
+            let blueComponent = 0.0 // Blue stays at 0
+            bgColor = UIColor(red: redComponent, green: greenComponent, blue: blueComponent, alpha: 0.5)
+            break
             
-            // Apply the colors and transparency to the label
-            label.backgroundColor = bgColor
-            label.textColor = textColor
+        default:
+            // Default mode, no changes
+            break
         }
+        
+        // Apply the colors and transparency to the label
+        label.backgroundColor = bgColor
+        label.textColor = textColor
+    }
 }
 
 extension [DistanceResult] {
@@ -152,5 +152,10 @@ extension [DistanceResult] {
     
     func isBottom() -> Bool {
         return contains(indices: 24...31)
+    }
+    
+    func shouldAlert(distance: Double) -> Bool {
+        // Check if any DistanceResult in the array has a distance below alertDistance
+        return self.contains { $0.distance < distance }
     }
 }
