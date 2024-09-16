@@ -248,17 +248,17 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
                 self.triggerHapticFeedback()
             }
             // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
-//            if self.detectedResults.isTop() {
-//                self.notify("TOP")
-//            }
-//            
-//            if detectedResults.isCenter() {
-//                self.notify("Center")
-//            }
-//            
-//            if detectedResults.isBottom() {
-//                self.notify("Bottom")
-//            }
+            //            if self.detectedResults.isTop() {
+            //                self.notify("TOP")
+            //            }
+            //
+            //            if detectedResults.isCenter() {
+            //                self.notify("Center")
+            //            }
+            //
+            //            if detectedResults.isBottom() {
+            //                self.notify("Bottom")
+            //            }
         }
     }
     
@@ -321,49 +321,57 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     }
     
     @objc private func captureButtonTapped() {
+        
+        Task {
+            do {
+                let distanceArray = self.detectedResults.map { distanceResult in
+                    Float(distanceResult.distance)
+                }
+                let prompt = Prompt.obstacles(distancesArray: distanceArray).text()
+                
+                try await TriggerPromptOnCurrentScreen(prompt: prompt)
+                
+            } catch {
+                print("Failed to describe obstacles: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.responseTextView.text = "\(self.processingText)\nFailed to describe obstacles: \(error.localizedDescription)"
+                }
+            }
+        }
+    }
+    
+    private func TriggerPromptOnCurrentScreen(prompt: String) async throws {
         guard let arFrame = captureCurrentFrame() else {
             print("Failed to capture image.")
             return
         }
-
+        
         DispatchQueue.main.async {
             self.showResponseTextView(withText: "Processing...")
             self.startTimer()
         }
         
         Task {
-            do {
-                guard let image = convertFrameToUIImage(arFrame),
-                      let base64Image = image.toBase64String() else {
-                    print("Failed to capture image.")
-                    return
+            guard let image = convertFrameToUIImage(arFrame),
+                  let base64Image = image.toBase64String() else {
+                print("Failed to capture image.")
+                return
+            }
+            
+
+            try await azureAiService.describeStream(base64Image: base64Image, prompt: prompt)
+            
+            print("description successfully retrieved.")
+            
+            DispatchQueue.main.async {
+                self.stopTimer() // Stop the timer when the response is received
+                if !self.azureAiService.message.isEmpty {
+                    self.showResponseTextView(withText: self.azureAiService.message)
+                    self.azureAiService.message.speak(speechSynthesizer: self.speechSynthesizer)
                 }
-                let distanceArray = self.detectedResults.map { distanceResult in
-                    Float(distanceResult.distance)
-                }
-                let prompt = Prompt.obstacles(distancesArray: distanceArray).text()
                 
-                try await azureAiService.describeObstacles(base64Image: base64Image, prompt: prompt)
-     
-                print("describeObstacles description successfully retrieved.")
-                
-                DispatchQueue.main.async {
-                    self.stopTimer() // Stop the timer when the response is received
-                    if !self.azureAiService.message.isEmpty {
-                        self.showResponseTextView(withText: self.azureAiService.message)
-                        self.azureAiService.message.speak(speechSynthesizer: self.speechSynthesizer)
-                    }
-                    
-                    if let error = self.azureAiService.errorMessage {
-                        self.responseTextView.textColor = .red
-                        self.responseTextView.alpha = 0.9
-                        self.responseTextView.text = error
-                    }
-                }
-            } catch {
-                print("Failed to describe obstacles: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    self.responseTextView.text = "\(self.processingText)\nFailed to describe obstacles: \(error.localizedDescription)"
+                if let error = self.azureAiService.errorMessage {
+                    self.showResponseTextView(withText: error)
                 }
             }
         }
@@ -384,15 +392,41 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         timer = nil
     }
     
-    @objc private func capureButtonTappedRapper() -> MPRemoteCommandHandlerStatus{
-        captureButtonTapped()
-        return .success
-    }
-    
     private func setupRemoteCommandCenter() {
         MPRemoteCommandCenter.shared()
             .playCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
         MPRemoteCommandCenter.shared()
             .stopCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .togglePlayPauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .pauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .nextTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
+        MPRemoteCommandCenter.shared()
+            .previousTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
     }
- }
+    
+    @objc private func capureButtonTappedRapper() -> MPRemoteCommandHandlerStatus{
+        captureButtonTapped()
+        return .success
+    }
+    
+    @objc private func describeScene() {
+        Task {
+            do {
+                try await TriggerPromptOnCurrentScreen(prompt: Prompt.scene.text())
+            } catch {
+                print("Failed to describe scenes: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.responseTextView.text = "\(self.processingText)\nFailed to describe obstacles: \(error.localizedDescription)"
+                }
+            }
+        }
+    }
+    
+    @objc private func describeSceneRapper() -> MPRemoteCommandHandlerStatus {
+        describeScene()
+        return .success
+    }
+}

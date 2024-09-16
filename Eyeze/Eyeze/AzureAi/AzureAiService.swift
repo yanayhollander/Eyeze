@@ -24,14 +24,6 @@ import SwiftOpenAI
         service = OpenAIServiceFactory.service(azureConfiguration: azureConfiguration)
     }
     
-    func describeObstacles(base64Image: String, prompt: String) async throws {
-        return try await describeStream(base64Image: base64Image, prompt: prompt)
-    }
-
-//    func describeScene(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAISceneResponse> {
-//        return try await describe(base64Image: base64Image, prompt: prompt)
-//    }
-    
 //    private func describe(base64Image: String, prompt: String) async throws {
 //        do {
 //            let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [
@@ -61,7 +53,7 @@ import SwiftOpenAI
 //        }
 //    }
     
-    private func describeStream(base64Image: String, prompt: String) async throws {
+    public func describeStream(base64Image: String, prompt: String) async throws {
         do {
             self.message = ""
             let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [
