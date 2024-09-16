@@ -8,17 +8,12 @@
 import SwiftUI
 import SwiftOpenAI
 
-typealias AzureAIResponse<T> = (response: T?, errorMessage: String?)
-
-protocol AzureAiServiceProtocol {
-    func describeObstacles(base64Image: String, prompt: String) async throws -> AzureAIResponse<String>
-//    func describeScene(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAISceneResponse>
-}
-
-@Observable class AzureAiService: AzureAiServiceProtocol {
+@Observable class AzureAiService {
     
     private let azureAiConfig = AzureAiConfig()
     private let service: OpenAIService
+    var message: String = ""
+    var errorMessage: String? = nil
     
     init() {
         let azureConfiguration = AzureOpenAIConfiguration(
@@ -29,18 +24,46 @@ protocol AzureAiServiceProtocol {
         service = OpenAIServiceFactory.service(azureConfiguration: azureConfiguration)
     }
     
-    func describeObstacles(base64Image: String, prompt: String) async throws -> AzureAIResponse<String> {
-        return try await describe(base64Image: base64Image, prompt: prompt)
+    func describeObstacles(base64Image: String, prompt: String) async throws {
+        return try await describeStream(base64Image: base64Image, prompt: prompt)
     }
 
 //    func describeScene(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAISceneResponse> {
 //        return try await describe(base64Image: base64Image, prompt: prompt)
 //    }
     
-    private func describe (base64Image: String, prompt: String) async throws -> AzureAIResponse<String> {
-        var errorMessage: String? = nil
-        
+//    private func describe(base64Image: String, prompt: String) async throws {
+//        do {
+//            let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [
+//                .text(prompt),
+//                .imageUrl(.init(url: URL(string: base64Image)!))
+//            ]
+//            
+//            // Define optional parameters for the chat completion request.
+//            let parameters = ChatCompletionParameters(
+//                messages: [.init(role: .user, content: .contentArray(messageContent))],
+//                model: .custom(azureAiConfig.deployment)
+//            )
+//            
+//            let choices = try await service.startChat(parameters: parameters).choices
+//            guard let rawResponse = choices.compactMap(\.message.content).first else {
+//                self.errorMessage = "Failed to get a valid response from the service."
+//                return
+//            }
+//
+//            message = rawResponse
+//        } catch APIError.responseUnsuccessful(let description) {
+//            self.errorMessage = "Network error with description: \(description)"
+//            self.message = ""
+//        } catch {
+//            self.errorMessage = error.localizedDescription
+//            self.message = ""
+//        }
+//    }
+    
+    private func describeStream(base64Image: String, prompt: String) async throws {
         do {
+            self.message = ""
             let messageContent: [ChatCompletionParameters.Message.ContentType.MessageContent] = [
                 .text(prompt),
                 .imageUrl(.init(url: URL(string: base64Image)!))
@@ -51,31 +74,20 @@ protocol AzureAiServiceProtocol {
                 logProbs: true,
                 topLogprobs: 1)
             
-            let choices = try await service.startChat(parameters: parameters).choices
-            guard let rawResponse = choices.compactMap(\.message.content).first else {
-                return (nil, "Failed to get a valid response from the service.")
-            }
-            
-            print(rawResponse)
-            
-//            let cleanedResponse = rawResponse
-//                .replacingOccurrences(of: "json", with: "")
-//                .replacingOccurrences(of: "`", with: "")
-//                .trimmingCharacters(in: .whitespacesAndNewlines)
-//            
-//            guard let jsonData = cleanedResponse.data(using: .utf8) else {
-//                throw NSError(domain: "ParsingError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Couldn't parse response"])
-//            }
-            
-            //let response = try JSONDecoder().decode(T.self, from: jsonData)
-            return (rawResponse, errorMessage)
+            let stream = try await service.startStreamedChat(parameters: parameters)
+            for try await result in stream {
+                let content = result.choices.first?.delta.content ?? ""
+                print("DELTA !!! : \(content)")
+                self.message += content
+           }
+
         } catch APIError.responseUnsuccessful(let description) {
-            errorMessage = "Network error with description: \(description)"
+            self.errorMessage = "Network error with description: \(description)"
+            self.message = ""
         } catch {
-            errorMessage = error.localizedDescription
+            self.errorMessage = error.localizedDescription
+            self.message = ""
         }
-        
-        return (nil, errorMessage)
     }
 }
 

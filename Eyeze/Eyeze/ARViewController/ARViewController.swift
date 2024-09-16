@@ -21,6 +21,7 @@ struct ARViewContainer: UIViewControllerRepresentable {
 class ARViewController: UIViewController, ARSessionDelegate {
     @State private var speechSynthesizer = AVSpeechSynthesizer()
     @AppStorage("enableVibration") private var enableVibration: Bool = true
+    @AppStorage("enableDebug") private var enableDebug: Bool = false
     @AppStorage("detectionDistance") private var detectionDistance: Double = DistanceLevel.DETECTION_DEFAULT_VALUE
     @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
     @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
@@ -36,7 +37,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private var captureButton: UIButton!
     private var responseTextView: UITextView!
     
-    private var responseText: String = ""
     private var processingText: String = ""
     private var promptText: String = ""
     
@@ -281,22 +281,25 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 
                 DispatchQueue.main.async {
                     self.responseTextView.isHidden = false
+                    self.responseTextView.textColor = .black
                     self.promptText = prompt
-                    self.responseText = ""
                     self.updateResponseTextView()
                 }
                 
-                let azureAIResponse = try await azureAiService.describeObstacles(base64Image: base64Image, prompt: prompt)
+                try await azureAiService.describeObstacles(base64Image: base64Image, prompt: prompt)
      
                 print("describeObstacles description successfully retrieved.")
                 
                 DispatchQueue.main.async {
                     self.stopTimer() // Stop the timer when the response is received
-                    if let response = azureAIResponse.response {
-                        let responseString = response
-                        self.responseText = responseString
+                    if !self.azureAiService.message.isEmpty {
                         self.updateResponseTextView()
-                        responseString.speak(speechSynthesizer: self.speechSynthesizer)
+                        self.azureAiService.message.speak(speechSynthesizer: self.speechSynthesizer)
+                    }
+                    
+                    if let error = self.azureAiService.errorMessage {
+                        self.responseTextView.textColor = .red
+                        self.responseTextView.text = error
                     }
                 }
             } catch {
@@ -321,15 +324,12 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     func updateResponseTextView() {
-        responseTextView.text = """
-                                \(processingText)
-                                Prompt:\n
-                                \(promptText)
-                                \n\n
-                                Response:\n
-                                \(responseText)
-                                """
-        responseTextView.scrollRangeToVisible(NSRange(location: responseTextView.text.count - 1, length: 1))
+        let prompt = enableDebug ? "Prompt:\n\(promptText)" : ""
+            responseTextView.text = """
+                                    \(processingText)
+                                    \(prompt)
+                                    \(self.azureAiService.message)
+                                    """
     }
     
     private func stopTimer() {
