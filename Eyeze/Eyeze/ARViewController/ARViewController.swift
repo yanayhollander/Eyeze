@@ -57,6 +57,15 @@ class ARViewController: UIViewController, ARSessionDelegate {
         setupHapticFeedback()
         setupCaptureContainer()
         setupRemoteCommandCenter()
+        
+        UIApplication.shared.isIdleTimerDisabled = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        // Re-enable the idle timer
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     
     override func viewDidLayoutSubviews() {
