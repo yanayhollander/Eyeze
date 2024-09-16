@@ -278,6 +278,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 DispatchQueue.main.async {
                     self.responseTextView.isHidden = false
                     self.promptText = prompt
+                    self.responseText = ""
                     self.updateResponseTextView()
                 }
                 

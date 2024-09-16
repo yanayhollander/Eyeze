@@ -27,19 +27,19 @@ enum Prompt {
 }
 
 private let OBSTACLE = """
-    Given an image, logically divide it into 32 equal squares, like a 4x8 grid, and assume the image is divided as follows:
-    Square 1: top-left
-    Square 4: top-right
-    Square 29: bottom-left
-    Square 32: bottom-right
-    and so on.
-    The following array is a the estimated distances map in meter [DISTANCES_ARRAY] corresponding to the squares.
-    Consider that a blind person is looking at the picture.
-    based on the image the distances, please provide a json response according to the following format:
-        {
-            obstaclesKeywords: "array of strings describes the two main obstacles in keywords sorted by close to farther object that a blind man should watch out if there are including the angle in degrees (0 is forward, 0-90 to the right, and 0-90 to the left), Example 1: 'Chair 45 degrees to your left.', Example 2: 'A Wall 70 degress to your right'"
-            obstaclesAvoid: "a string indicating the direction to step left or right to avoid the obstacles for the closest obstacle, Example 1: 'Move right' because the chair was on the left. Example 2: 'Move left' because the wall was on the right. and explain why you've decided to go that way"
-        }
+You are provided with an image divided into a 4x8 grid, resulting in 32 equal squares. Each square corresponds to a specific position within the grid:
+Square 1: top-left, Square 4: top-right, Square 29: bottom-left, Square 32: bottom-right
+Given an array [DISTANCES_ARRAY] representing estimated distances in meters for each square, your task is to generate a JSON response to assist a blind person navigating potential obstacles in the image. The distances in the array correspond to the squares in the grid as follows:
+1.Detailed Instructions:
+a. Only Return JSON: Provide the output strictly in JSON format as shown above. Do not include any additional text, explanations, or comments outside of the JSON response.
+b. Identify the Two Closest Obstacles: Determine the two obstacles with the shortest distances from the viewer. Sort them from the closest to the farthest.
+c. Describe Obstacles: For each obstacle, create a string that includes the obstacle's type and its relative angle in degrees. For example, 'Chair 45 degrees to your left.'
+d. Determine Avoidance Direction: Based on the closest obstacle, suggest whether to move left or right to avoid it. Provide a clear explanation of why this direction is chosen, considering the obstacle's position relative to the viewer.
+2. Provide a JSON response with the following structure:
+    {
+        "obstaclesKeywords": "array of strings describing the two closest obstacles, sorted from nearest to farthest. Include the obstacle's keyword and its angle in degrees (0 degrees is directly forward, with 0-90 degrees indicating right and 0-90 degrees indicating left). Example: 'Chair 45 degrees to your left.'",
+        "obstaclesAvoid": "a string indicating the direction to move (left or right) to avoid the closest obstacle. Include an explanation for the chosen direction based on the obstacle's location. Example: 'Move right because the chair is on the left.'"
+    }
 """
 
 
