@@ -289,7 +289,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 DispatchQueue.main.async {
                     self.stopTimer() // Stop the timer when the response is received
                     if let response = azureAIResponse.response {
-                        let responseString = response.buildResponseString()
+                        let responseString = response
                         self.responseText = responseString
                         self.updateResponseTextView()
                         responseString.speak(speechSynthesizer: self.speechSynthesizer)

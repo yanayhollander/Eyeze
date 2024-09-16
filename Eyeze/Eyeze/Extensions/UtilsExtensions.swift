@@ -10,7 +10,7 @@ import AVFAudio
 
 extension UIImage {
     func toBase64String() -> String? {
-        guard let imageData = self.jpegData(compressionQuality: 1.0) else {
+        guard let imageData = self.jpegData(compressionQuality: 0.5) else {
             fatalError("Failed to convert image to JPEG data")
         }
         

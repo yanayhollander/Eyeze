@@ -11,8 +11,8 @@ import SwiftOpenAI
 typealias AzureAIResponse<T> = (response: T?, errorMessage: String?)
 
 protocol AzureAiServiceProtocol {
-    func describeObstacles(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAIObstaclesResponse>
-    func describeScene(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAISceneResponse>
+    func describeObstacles(base64Image: String, prompt: String) async throws -> AzureAIResponse<String>
+//    func describeScene(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAISceneResponse>
 }
 
 @Observable class AzureAiService: AzureAiServiceProtocol {
@@ -29,15 +29,15 @@ protocol AzureAiServiceProtocol {
         service = OpenAIServiceFactory.service(azureConfiguration: azureConfiguration)
     }
     
-    func describeObstacles(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAIObstaclesResponse> {
+    func describeObstacles(base64Image: String, prompt: String) async throws -> AzureAIResponse<String> {
         return try await describe(base64Image: base64Image, prompt: prompt)
     }
 
-    func describeScene(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAISceneResponse> {
-        return try await describe(base64Image: base64Image, prompt: prompt)
-    }
+//    func describeScene(base64Image: String, prompt: String) async throws -> AzureAIResponse<OpenAISceneResponse> {
+//        return try await describe(base64Image: base64Image, prompt: prompt)
+//    }
     
-    private func describe<T: Decodable> (base64Image: String, prompt: String) async throws -> AzureAIResponse<T> {
+    private func describe (base64Image: String, prompt: String) async throws -> AzureAIResponse<String> {
         var errorMessage: String? = nil
         
         do {
@@ -58,17 +58,17 @@ protocol AzureAiServiceProtocol {
             
             print(rawResponse)
             
-            let cleanedResponse = rawResponse
-                .replacingOccurrences(of: "json", with: "")
-                .replacingOccurrences(of: "`", with: "")
-                .trimmingCharacters(in: .whitespacesAndNewlines)
+//            let cleanedResponse = rawResponse
+//                .replacingOccurrences(of: "json", with: "")
+//                .replacingOccurrences(of: "`", with: "")
+//                .trimmingCharacters(in: .whitespacesAndNewlines)
+//            
+//            guard let jsonData = cleanedResponse.data(using: .utf8) else {
+//                throw NSError(domain: "ParsingError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Couldn't parse response"])
+//            }
             
-            guard let jsonData = cleanedResponse.data(using: .utf8) else {
-                throw NSError(domain: "ParsingError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Couldn't parse response"])
-            }
-            
-            let response = try JSONDecoder().decode(T.self, from: jsonData)
-            return (response, errorMessage)
+            //let response = try JSONDecoder().decode(T.self, from: jsonData)
+            return (rawResponse, errorMessage)
         } catch APIError.responseUnsuccessful(let description) {
             errorMessage = "Network error with description: \(description)"
         } catch {
@@ -78,3 +78,4 @@ protocol AzureAiServiceProtocol {
         return (nil, errorMessage)
     }
 }
+
