@@ -28,21 +28,21 @@ enum Prompt {
 
 private let OBSTACLE = """
  The given image is logically divide into 8x4 grid as:
-    [[ 1,  2,  3,  4],
-     [ 5,  6,  7,  8],
-     [ 9, 10, 11, 12],
-     [13, 14, 15, 16],
-     [17, 18, 19, 20],
-     [21, 22, 23, 24],
-     [25, 26, 27, 28],
-     [29, 30, 31, 32]].
+    [[ 0,  1,  2,  3],
+     [ 4,  5,  6,  7],
+     [ 8,  9, 10, 11],
+     [12, 13, 14, 15],
+     [16, 17, 18, 19],
+     [20, 21, 22, 23],
+     [24, 25, 26, 27],
+     [28, 29, 30, 31]].
     All the cells are size equal.
-    Image left side is [1, 5, 9, 13, 17, 21, 25, 29]
-    Image left center side is: [2, 6, 10, 14, 18, 22, 26, 30]
-    Image right center side is: [3, 7, 11, 15, 19, 23, 27, 31]
-    Image right side is: [4, 8, 12, 16, 20, 24, 28, 32]
-    Image top is 1, 2, 3, 4
-    Image button is 29, 30, 31, 32
+    Image left side is [0, 4, 8, 12, 16, 20, 24, 28]
+    Image left center side is: [1, 5, 9, 13, 17, 21, 25, 29]
+    Image right center side is: [2, 6, 10, 14, 18, 22, 26, 30]
+    Image right side is: [3, 7, 11, 15, 19, 23, 27, 31]
+    Image top is: [0, 1, 2, 3]
+    Image button is: [28, 29, 30, 31]
 
     DistanceArray = [DISTANCES_ARRAY]
     The DistanceArray above includes 32 cells corresponding to the grid above by index. Each cell in the DistanceArray contain
