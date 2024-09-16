@@ -37,6 +37,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     private var captureContainer: UIView!
     private var distanceLabelsContainer: UIView!
     private var captureButton: UIButton!
+    private var captureButtonS: UIButton!
     private var responseTextView: UITextView!
     
     private var processingText: String = ""
@@ -134,6 +135,16 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         captureButton.addTarget(self, action: #selector(captureButtonTapped), for: .touchUpInside)
         captureContainer.addSubview(captureButton)
         
+        captureButtonS = UIButton(type: .system)
+        captureButtonS.translatesAutoresizingMaskIntoConstraints = false
+        captureButtonS.setTitle("Capture Scene", for: .normal)
+        captureButtonS.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold) // Larger font for accessibility
+        captureButtonS.setTitleColor(.white, for: .normal)
+        captureButtonS.backgroundColor = .systemBlue
+        captureButtonS.layer.cornerRadius = 10
+        captureButtonS.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
+        captureContainer.addSubview(captureButtonS)
+        
         // Setup Response TextView
         responseTextView = UITextView()
         responseTextView.translatesAutoresizingMaskIntoConstraints = false
@@ -158,6 +169,11 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
             captureButton.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -30),
             captureButton.heightAnchor.constraint(equalToConstant: 50),
             captureButton.widthAnchor.constraint(equalToConstant: 200),
+
+            captureButtonS.topAnchor.constraint(equalTo: captureContainer.topAnchor, constant: 55),
+            captureButtonS.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -30),
+            captureButtonS.heightAnchor.constraint(equalToConstant: 50),
+            captureButtonS.widthAnchor.constraint(equalToConstant: 200),
             
             responseTextView.leadingAnchor.constraint(equalTo: captureContainer.leadingAnchor, constant: 0),
             responseTextView.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: 0),
