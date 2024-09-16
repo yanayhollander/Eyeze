@@ -40,12 +40,22 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private var lastNotificationTimes: [String: Date] = [:]
     private let DEBOUNCE_INTERVAL = 1.0
     
+    private var hasDrawnDistanceLabels = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupARView()
         setupHapticFeedback()
-        drawDistanceLabels()
         setupCaptureContainer()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        if !hasDrawnDistanceLabels {
+            drawDistanceLabels()
+            hasDrawnDistanceLabels = true
+        }
     }
     
     // MARK: - ARSessionDelegate Methods
@@ -79,7 +89,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     private func drawDistanceLabels() {
         let labelPoints = DistanceUtils.getScreenPoints(for: view)
-        distanceLabels = labelPoints.all.map { createDistanceLabel(at: $0) }
+        distanceLabels = labelPoints.all.map { createDistanceLabel(for: view, at: $0) }
         distanceLabels.forEach {
             view.addSubview($0)
         }
@@ -155,25 +165,29 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     screenPoints: screenPoints,
                     point: point
                 )
-                
+                                
                 detectedResults.append(distanceResult)
-                
-                // Update the distance label
-                DistanceUtils.updateDistanceLabel(distanceLabels[index], distance: CGFloat(distance), distanceLevel: distanceResult.level)
             }
         }
         
-        // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
-        if detectedResults.isTop() {
-            notify("TOP")
-        }
+        DispatchQueue.main.async {
+            for(index, point) in detectedResults.enumerated() {
+                // Update the distance label
+                DistanceUtils.updateDistanceLabel(self.distanceLabels[index], distance: point.distance ?? .infinity, distanceLevel: point.level)
+            }
         
-        if detectedResults.isCenter() {
-            notify("Center")
-        }
-        
-        if detectedResults.isBottom() {
-            notify("Bottom")
+            // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
+            if detectedResults.isTop() {
+                self.notify("TOP")
+            }
+            
+            if detectedResults.isCenter() {
+                self.notify("Center")
+            }
+            
+            if detectedResults.isBottom() {
+                self.notify("Bottom")
+            }
         }
     }
     
@@ -198,15 +212,20 @@ class ARViewController: UIViewController, ARSessionDelegate {
     }
     
     // MARK: - Helper Methods
-    private func createDistanceLabel(at point: CGPoint) -> UILabel {
-        let label = UILabel()
-        label.frame = CGRect(x: point.x, y: point.y, width: 100, height: 20)
-        label.textColor = .white
-        label.font = UIFont.systemFont(ofSize: 14)
-        label.textAlignment = .center
-        label.text = "0.00 m"
-        return label
-    }
+    private func createDistanceLabel(for view: UIView, at point: CGPoint) -> UILabel {
+            let layoutFrame = view.safeAreaLayoutGuide.layoutFrame
+            
+            // Calculate the width and height of each square in the 4x4 grid
+            let squareWidth = layoutFrame.width / 4
+            let squareHeight = layoutFrame.height / 8
+
+            let label = UILabel()
+            label.frame = CGRect(x: point.x, y: point.y, width: squareWidth, height: squareHeight)
+            label.textColor = .black
+            label.font = UIFont.systemFont(ofSize: 14)
+            label.textAlignment = .center
+            return label
+        }
     
     private func captureCurrentFrame() -> ARFrame? {
         guard let currentFrame = arView.session.currentFrame else {
