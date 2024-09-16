@@ -19,7 +19,7 @@ struct ARViewContainer: UIViewControllerRepresentable {
     }
 }
 
-class ARViewController: UIViewController, ARSessionDelegate {
+class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizerDelegate {
     @State private var speechSynthesizer = AVSpeechSynthesizer()
     @AppStorage("enableVibration") private var enableVibration: Bool = true
     @AppStorage("enableDebug") private var enableDebug: Bool = false
@@ -35,11 +35,11 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private let audioSession = AVAudioSession.sharedInstance()
     
     private var captureContainer: UIView!
+    private var distanceLabelsContainer: UIView!
     private var captureButton: UIButton!
     private var responseTextView: UITextView!
     
     private var processingText: String = ""
-    private var promptText: String = ""
     
     // Store the last notification times for different texts
     private var lastNotificationTimes: [String: Date] = [:]
@@ -57,6 +57,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
         setupHapticFeedback()
         setupCaptureContainer()
         setupRemoteCommandCenter()
+        speechSynthesizer.delegate = self
         
         UIApplication.shared.isIdleTimerDisabled = true
     }
@@ -108,9 +109,12 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     private func drawDistanceLabels() {
         let labelPoints = DistanceUtils.getScreenPoints(for: view)
+        distanceLabelsContainer = UIView()
+        view.addSubview(distanceLabelsContainer)
+        
         distanceLabels = labelPoints.all.map { createDistanceLabel(for: view, at: $0) }
         distanceLabels.forEach {
-            view.addSubview($0)
+            distanceLabelsContainer.addSubview($0)
         }
     }
     
@@ -139,26 +143,72 @@ class ARViewController: UIViewController, ARSessionDelegate {
         responseTextView.textColor = .black
         responseTextView.font = UIFont.systemFont(ofSize: 16)
         responseTextView.isHidden = false  // Make sure it's not hidden
-        responseTextView.alpha = 0.7
+        responseTextView.alpha = 0.0
+        responseTextView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         captureContainer.addSubview(responseTextView)
         
         // Layout constraints
         NSLayoutConstraint.activate([
-            captureContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            captureContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            captureContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
-            captureContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16), // Ensure it stretches to the bottom
+            captureContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
+            captureContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
+            captureContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            captureContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0), // Ensure it stretches to the bottom
             
             captureButton.topAnchor.constraint(equalTo: captureContainer.topAnchor),
             captureButton.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -30),
             captureButton.heightAnchor.constraint(equalToConstant: 50),
             captureButton.widthAnchor.constraint(equalToConstant: 200),
             
-            responseTextView.topAnchor.constraint(equalTo: captureButton.bottomAnchor, constant: 16),
-            responseTextView.leadingAnchor.constraint(equalTo: captureContainer.leadingAnchor, constant: 16),
-            responseTextView.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -16),
-            responseTextView.bottomAnchor.constraint(equalTo: captureContainer.bottomAnchor, constant: -16)
+            responseTextView.leadingAnchor.constraint(equalTo: captureContainer.leadingAnchor, constant: 0),
+            responseTextView.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: 0),
+            responseTextView.heightAnchor.constraint(equalToConstant: 100),
+            responseTextView.bottomAnchor.constraint(equalTo: captureContainer.bottomAnchor, constant: 100) // Position it off-screen
         ])
+        
+        captureContainer.layoutIfNeeded()
+    }
+    
+    func showResponseTextView(withText text: String) {
+        // Set the text
+        responseTextView.text = text
+        responseTextView.textColor = .black
+        responseTextView.textAlignment = .left
+        view.bringSubviewToFront(captureContainer)
+
+        // Update the bottom constraint to bring the view into view
+        for constraint in captureContainer.constraints {
+            if constraint.firstItem as? UITextView == responseTextView && constraint.firstAttribute == .bottom {
+                constraint.constant = 0
+            }
+        }
+
+        // Animate the transition
+        UIView.animate(withDuration: 0.5, animations: {
+            self.captureContainer.layoutIfNeeded()
+            self.responseTextView.alpha = 0.9 // Animate alpha
+        })
+    }
+    
+    func hideResponseTextView() {
+        responseTextView.text = ""
+        responseTextView.alpha = 0.0
+
+        // Update the bottom constraint to bring the view into view
+        for constraint in captureContainer.constraints {
+            if constraint.firstItem as? UITextView == responseTextView && constraint.firstAttribute == .bottom {
+                constraint.constant = 100
+            }
+        }
+
+        // Animate the transition
+        UIView.animate(withDuration: 0.5, animations: {
+            self.captureContainer.layoutIfNeeded()
+            self.responseTextView.alpha = 0.0 // Animate alpha
+        })
+    }
+    
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        hideResponseTextView()
     }
     
     // MARK: - Detection and Feedback Methods
@@ -276,7 +326,10 @@ class ARViewController: UIViewController, ARSessionDelegate {
             return
         }
 
-        startTimer()
+        DispatchQueue.main.async {
+            self.showResponseTextView(withText: "Processing...")
+            self.startTimer()
+        }
         
         Task {
             do {
@@ -290,13 +343,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 }
                 let prompt = Prompt.obstacles(distancesArray: distanceArray).text()
                 
-                DispatchQueue.main.async {
-                    self.responseTextView.isHidden = false
-                    self.responseTextView.textColor = .black
-                    self.promptText = prompt
-                    self.updateResponseTextView()
-                }
-                
                 try await azureAiService.describeObstacles(base64Image: base64Image, prompt: prompt)
      
                 print("describeObstacles description successfully retrieved.")
@@ -304,12 +350,13 @@ class ARViewController: UIViewController, ARSessionDelegate {
                 DispatchQueue.main.async {
                     self.stopTimer() // Stop the timer when the response is received
                     if !self.azureAiService.message.isEmpty {
-                        self.updateResponseTextView()
+                        self.showResponseTextView(withText: self.azureAiService.message)
                         self.azureAiService.message.speak(speechSynthesizer: self.speechSynthesizer)
                     }
                     
                     if let error = self.azureAiService.errorMessage {
                         self.responseTextView.textColor = .red
+                        self.responseTextView.alpha = 0.9
                         self.responseTextView.text = error
                     }
                 }
@@ -329,18 +376,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     
     @objc private func updateTimer() {
         elapsedTime += 0.1
-        processingText = String(format: "Processing... %.1f seconds", elapsedTime)
-        updateResponseTextView()
-        
-    }
-    
-    func updateResponseTextView() {
-        let prompt = enableDebug ? "Prompt:\n\(promptText)" : ""
-            responseTextView.text = """
-                                    \(processingText)
-                                    \(prompt)
-                                    \(self.azureAiService.message)
-                                    """
+        responseTextView.text = String(format: "Processing... %.1f seconds", elapsedTime)
     }
     
     private func stopTimer() {
