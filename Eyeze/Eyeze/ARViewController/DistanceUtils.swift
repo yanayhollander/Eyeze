@@ -21,7 +21,7 @@ struct ScreenPoints {
 
 struct DistanceResult {
     var level: DistanceLevel?
-    var distance: Double?
+    var distance: Double
     var detectedCells: [Int] = []
 }
 

@@ -45,8 +45,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private let DEBOUNCE_INTERVAL = 1.0
     
     private var hasDrawnDistanceLabels = false
-    // Property to store the index of the closest cell
-    private var closestSquare: (Int?, Float)?
+    var detectedResults: [DistanceResult] = []
     
     private var timer: Timer?
     private var elapsedTime: TimeInterval = 0.0
@@ -155,8 +154,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
     private func detectMultiplePoints() {
         let screenPoints = DistanceUtils.getScreenPoints(for: view)
         var closestDistance: Float = .infinity
-        var closestSquareIndex: Int?
-        var detectedResults: [DistanceResult] = []
+        self.detectedResults = []
         
         // Iterate through all screen points
         for (index, point) in screenPoints.all.enumerated() {
@@ -164,11 +162,6 @@ class ARViewController: UIViewController, ARSessionDelegate {
             if let result = hitTestResults.first {
                 let distance = Float(result.distance)
                 closestDistance = min(closestDistance, distance)
-                
-                // Keep track of the index with the closest distance
-                if distance == closestDistance {
-                    closestSquareIndex = index
-                }
                 
                 // Get distance result
                 let distanceResult = DistanceUtils.onDistanceUpdate(
@@ -180,31 +173,28 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     point: point
                 )
                 
-                detectedResults.append(distanceResult)
+                self.detectedResults.append(distanceResult)
             }
         }
         
         DispatchQueue.main.async {
-            for(index, point) in detectedResults.enumerated() {
+            for(index, point) in self.detectedResults.enumerated() {
                 // Update the distance label
                 DistanceUtils.updateDistanceLabel(self.distanceLabels[index], distance: point.distance ?? .infinity, distanceLevel: point.level)
             }
             
-            // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
-            if detectedResults.isTop() {
-                self.notify("TOP")
-            }
-            
-            if detectedResults.isCenter() {
-                self.notify("Center")
-            }
-            
-            if detectedResults.isBottom() {
-                self.notify("Bottom")
-            }
-            
-            // Store the closest cell index for later use
-            self.closestSquare = (closestSquareIndex, closestDistance)
+//            // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
+//            if self.detectedResults.isTop() {
+//                self.notify("TOP")
+//            }
+//            
+//            if detectedResults.isCenter() {
+//                self.notify("Center")
+//            }
+//            
+//            if detectedResults.isBottom() {
+//                self.notify("Bottom")
+//            }
         }
     }
     
@@ -280,13 +270,10 @@ class ARViewController: UIViewController, ARSessionDelegate {
                     print("Failed to capture image.")
                     return
                 }
-                
-                
-                guard let square = closestSquare else { return }
-                
-                let squareIndex: Int =  square.0 ?? 14
-                let distance: Float = square.1
-                let prompt = Prompt.obstacles(square: squareIndex, distance: distance).text()
+                let distanceArray = self.detectedResults.map { distanceResult in
+                    Float(distanceResult.distance)
+                }
+                let prompt = Prompt.obstacles(distancesArray: distanceArray).text()
                 
                 DispatchQueue.main.async {
                     self.responseTextView.isHidden = false

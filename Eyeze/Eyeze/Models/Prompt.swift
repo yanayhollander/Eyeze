@@ -8,15 +8,18 @@
 import Foundation
 
 enum Prompt {
-    case obstacles(square: Int, distance: Float)
+    case obstacles(distancesArray: [Float])
     case scene
     
     func text() -> String {
         switch self {
-        case .obstacles(let square, let distance):
-            return OBSTACLE
-                .replacingOccurrences(of: "SQUARE_INDEX", with: "\(square)")
-                .replacingOccurrences(of: "ESTIMATE_DISTANCE", with: String(format: "%.1f", distance))
+        case .obstacles(let distancesArray):
+            // Format each distance to one decimal place
+            let formattedDistances = distancesArray.map { String(format: "%.2f", $0) }
+            // Join the formatted distances into a single string
+            let distancesString = "[" + formattedDistances.joined(separator: ", ") + "]"
+            // Replace the placeholder with the formatted distances
+            return OBSTACLE.replacingOccurrences(of: "[DISTANCES_ARRAY]", with: distancesString)
         case .scene:
             return SCENE
         }
@@ -30,10 +33,12 @@ private let OBSTACLE = """
     Square 29: bottom-left
     Square 32: bottom-right
     and so on.
-    Focus on square SQUARE_INDEX estimated distance ESTIMATE_DISTANCEm, based on this section, please provide a json response according to the following format:
+    The following array is a the estimated distances map in meter [DISTANCES_ARRAY] corresponding to the squares.
+    Consider that a blind person is looking at the picture.
+    based on the image the distances, please provide a json response according to the following format:
         {
-            obstaclesKeywords: "array of strings describes the two main obstacles in keywords that a blind man should watchout if there are"
-            obstaclesAvoid: "a string indicating the direction to avoid the obstacles, including the angle in degrees (0 is forward, 0-90 to the right, and 0-90 to the left) and the distance in meters to proceed, if possible. Example: 'Move right at 45 degrees for 2 meters.', another example 'Move left at 10 degrees for 1.5 meters.'"
+            obstaclesKeywords: "array of strings describes the two main obstacles in keywords sorted by close to farther object that a blind man should watch out if there are including the angle in degrees (0 is forward, 0-90 to the right, and 0-90 to the left), Example 1: 'Chair 45 degrees to your left.', Example 2: 'A Wall 70 degress to your right'"
+            obstaclesAvoid: "a string indicating the direction to step left or right to avoid the obstacles for the closest obstacle, Example 1: 'Move right' because the chair was on the left. Example 2: 'Move left' because the wall was on the right. and explain why you've decided to go that way"
         }
 """
 
