@@ -37,7 +37,7 @@ c. Describe Obstacles: For each obstacle, create a string that includes the obst
 d. Determine Avoidance Direction: Based on the closest obstacle, suggest whether to move left or right to avoid it. Provide a clear explanation of why this direction is chosen, considering the obstacle's position relative to the viewer.
 2. Provide a JSON response with the following structure:
     {
-        "obstaclesKeywords": "array of strings describing the two closest obstacles, sorted from nearest to farthest. Include the obstacle's keyword, his approximate distance in meter and its angle in degrees (0 degrees is directly forward, with 0-90 degrees indicating right and 0-90 degrees indicating left). Example: 'Chair 0.20m and 45 degrees to your left.'",
+        "obstaclesKeywords": "array of strings describing the two closest obstacles, sorted from nearest to farthest. Include the obstacle's keyword, his approximate distance in meter and its direction from my point of view (left/right/forward). Example: 'Chair in 0.20m to your left.'",
         "obstaclesAvoid": "a string indicating the direction to move (left/right/forward) to avoid the closest obstacle. Include an explanation for the chosen direction based on the obstacle's location. Example: 'Move right because the chair is on the left.'"
     }
 """
