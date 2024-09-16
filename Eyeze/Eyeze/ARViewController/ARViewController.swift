@@ -8,6 +8,7 @@
 import UIKit
 import ARKit
 import SwiftUI
+import MediaPlayer
 
 struct ARViewContainer: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> ARViewController {
@@ -55,6 +56,7 @@ class ARViewController: UIViewController, ARSessionDelegate {
         setupARView()
         setupHapticFeedback()
         setupCaptureContainer()
+        setupRemoteCommandCenter()
     }
     
     override func viewDidLayoutSubviews() {
@@ -336,4 +338,16 @@ class ARViewController: UIViewController, ARSessionDelegate {
         timer?.invalidate()
         timer = nil
     }
-}
+    
+    @objc private func capureButtonTappedRapper() -> MPRemoteCommandHandlerStatus{
+        captureButtonTapped()
+        return .success
+    }
+    
+    private func setupRemoteCommandCenter() {
+        MPRemoteCommandCenter.shared()
+            .playCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .stopCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+    }
+ }
