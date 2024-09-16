@@ -63,20 +63,20 @@ struct ChatDemoView: View {
         HStack(spacing: 4) {
             Button {
                 Task {
-                    isLoading = true
-                    defer { isLoading = false }
-                    
-                    let image = loadTestImage(name: "testImage2")
-                    base64ImageString = image
-  
-                    let result = try await azureAiService.describeScene(base64Image: image, prompt: Prompt.scene.text())
-                    
-                    if let response = result.response {
-                        azureAIResponse = response
-                        response.buildResponseString().speak(speechSynthesizer: speechSynthesizer)
-                    } else if let error = result.errorMessage {
-                        errorMessage = error
-                    }
+//                    isLoading = true
+//                    defer { isLoading = false }
+//                    
+//                    let image = loadTestImage(name: "testImage2")
+//                    base64ImageString = image
+//  
+//                    let result = try await azureAiService.describeScene(base64Image: image, prompt: Prompt.scene.text())
+//                    
+//                    if let response = result.response {
+//                        azureAIResponse = response
+//                        response.buildResponseString().speak(speechSynthesizer: speechSynthesizer)
+//                    } else if let error = result.errorMessage {
+//                        errorMessage = error
+//                    }
                 }
             } label: {
                 Image(systemName: "paperplane")

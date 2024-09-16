@@ -27,19 +27,36 @@ enum Prompt {
 }
 
 private let OBSTACLE = """
-You are provided with an image divided into a 4x8 grid, resulting in 32 equal squares. Each square corresponds to a specific position within the grid:
-Square 1: top-left, Square 4: top-right, Square 29: bottom-left, Square 32: bottom-right
-Given an array [DISTANCES_ARRAY] representing estimated distances in meters for each square, your task is to generate a JSON response to assist a blind person navigating potential obstacles in the image. The distances in the array correspond to the squares in the grid as follows:
-1.Detailed Instructions:
-a. Only Return JSON: Provide the output strictly in JSON format as shown above. Do not include any additional text, explanations, or comments outside of the JSON response.
-b. Identify the Two Closest Obstacles: Determine the two obstacles with the shortest distances from the viewer. Sort them from the closest to the farthest.
-c. Describe Obstacles: For each obstacle, create a string that includes the obstacle's type and its relative angle in degrees. For example, 'Chair 45 degrees to your left.'
-d. Determine Avoidance Direction: Based on the closest obstacle, suggest whether to move left or right to avoid it. Provide a clear explanation of why this direction is chosen, considering the obstacle's position relative to the viewer.
-2. Provide a JSON response with the following structure:
-    {
-        "obstaclesKeywords": "array of strings describing the two closest obstacles, sorted from nearest to farthest. Include the obstacle's keyword, his approximate distance in meter and its direction from my point of view (left/right/forward). Example: 'Chair in 0.20m to your left.'",
-        "obstaclesAvoid": "a string indicating the direction to move (left/right/forward) to avoid the closest obstacle. Include an explanation for the chosen direction based on the obstacle's location. Example: 'Move right because the chair is on the left.'"
-    }
+ The given image is logically divide into 8x4 grid as:
+    [[ 1,  2,  3,  4],
+     [ 5,  6,  7,  8],
+     [ 9, 10, 11, 12],
+     [13, 14, 15, 16],
+     [17, 18, 19, 20],
+     [21, 22, 23, 24],
+     [25, 26, 27, 28],
+     [29, 30, 31, 32]].
+    All the cells are size equal.
+    Image left side is [1, 5, 9, 13, 17, 21, 25, 29]
+    Image left center side is: [2, 6, 10, 14, 18, 22, 26, 30]
+    Image right center side is: [3, 7, 11, 15, 19, 23, 27, 31]
+    Image right side is: [4, 8, 12, 16, 20, 24, 28, 32]
+    Image top is 1, 2, 3, 4
+    Image button is 29, 30, 31, 32
+
+    DistanceArray = [DISTANCES_ARRAY]
+    The DistanceArray above includes 32 cells corresponding to the grid above by index. Each cell in the DistanceArray contain
+    the distance of the nearest obstcale in the cell frame.
+    
+    Your target is to help blind people to navigate around obstacles.
+    You should detrmine obstacle by determine the nearest object in the image which you can do it by the DistanceArray data.
+    - Don't mention cells in your response
+    - Do guide only for the nearest obstacle
+    - Do use human step instead of meter
+    - Do mention the obstcale title like its name (e.g. Table, Banana)
+    - Do short guidence
+
+    Guidence example: You have a table in your center left side, pls move one step to the right
 """
 
 
