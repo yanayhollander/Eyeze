@@ -12,8 +12,6 @@ struct ScreenPoints {
     var top: [CGPoint]
     var center: [CGPoint]
     var bottom: [CGPoint]
-    //    var left: [CGPoint]
-    //    var right: [CGPoint]
     var all: [CGPoint] {
         return top + center + bottom
     }
@@ -69,7 +67,7 @@ class DistanceUtils {
         }
         
         // Check which cell the point belongs to and add it to the detectedCells
-        if let cellIndex = getCellIndex(for: point, in: screenPoints), distance < alertDistance {
+        if let cellIndex = getCellIndex(for: point, in: screenPoints) {
             distanceResult.detectedCells.append(cellIndex)
         }
         
@@ -128,34 +126,85 @@ class DistanceUtils {
         label.textColor = textColor
     }
 }
-
+//[[ 0,  1,  2,  3],
+// [ 4,  5,  6,  7],
+// [ 8,  9, 10, 11],
+// [12, 13, 14, 15],
+// [16, 17, 18, 19],
+// [20, 21, 22, 23],
+// [24, 25, 26, 27],
+// [28, 29, 30, 31]].
 extension [DistanceResult] {
-    private func contains(indices: ClosedRange<Int>) -> Bool {
-        let flatMap = self.flatMap { $0.detectedCells }
-        var isExists = false
-        indices.forEach { ind in
-            if(flatMap.contains(ind)) {
-                isExists = true
+    private func contains(indices: Set<Int>, belowDistance: Double) -> Int {
+        let detectedCellsSet = Set(self.flatMap { $0.detectedCells })
+        // Count how many cells are in the detected set and are below the given distance
+        return detectedCellsSet.intersection(indices).count
+    }
+
+        // Grid area definitions
+        private enum GridArea: String {
+            case topLeft = "Top Left"
+            case topRight = "Top Right"
+            case top = "Top"
+            case left = "Left"
+            case center = "Center"
+            case right = "Right"
+            case bottomRight = "Bottom Right"
+            case bottomLeft = "Bottom Left"
+            case bottom = "Bottom"
+        }
+
+    private var gridAreas: [GridArea: Set<Int>] {
+        return [
+            .topLeft: [0, 1, 4, 5],
+            .topRight: [2, 3, 6, 7],
+            .top: [0, 1, 2, 3, 4, 5, 6, 7],
+            .left: [0, 4, 8, 12, 16, 20],
+            .center: [9, 10, 13, 14, 17, 18, 21, 22],
+            .right: [11, 15, 19, 23],
+            .bottomRight: [26, 27, 30, 31],
+            .bottomLeft: [24, 25, 28, 29],
+            .bottom: [24, 25, 26, 27, 28, 29, 30, 31]
+        ]
+    }
+
+    func checkDistances(alertDistance: Double, warningDistance: Double) -> CheckDistanceResult {
+        var maxAlertCount = 0
+        var maxWarningCount = 0
+        var alertLocation: String? = nil
+        var warningLocation: String? = nil
+        
+        for (area, indices) in gridAreas {
+            let alertCount = contains(indices: indices, belowDistance: alertDistance)
+            let warningCount = contains(indices: indices, belowDistance: warningDistance)
+            
+            // Debugging output
+            print("Area: \(area.rawValue), Alert Count: \(alertCount), Warning Count: \(warningCount)")
+            
+            if alertCount > maxAlertCount {
+                maxAlertCount = alertCount
+                alertLocation = "\(area)"
+            }
+            
+            if warningCount > maxWarningCount {
+                maxWarningCount = warningCount
+                warningLocation = "\(area)"
             }
         }
         
-        return isExists
+        if maxAlertCount > 0 {
+            return CheckDistanceResult(shouldAlert: true, level: .alert, location: alertLocation ?? "")
+        } else if maxWarningCount > 0 {
+            return CheckDistanceResult(shouldAlert: true, level: .warning, location: warningLocation ?? "")
+        }
+        
+        return CheckDistanceResult(shouldAlert: false, level: .detection, location: "")
     }
+}
+
+struct CheckDistanceResult {
+    var shouldAlert: Bool
+    var level: DistanceLevel
+    var location: String
     
-    func isTop() -> Bool {
-        return contains(indices: 0...7)
-    }
-    
-    func isCenter() -> Bool {
-        return contains(indices: 8...23)
-    }
-    
-    func isBottom() -> Bool {
-        return contains(indices: 24...31)
-    }
-    
-    func shouldAlert(distance: Double) -> Bool {
-        // Check if any DistanceResult in the array has a distance below alertDistance
-        return self.contains { $0.distance < distance }
-    }
 }

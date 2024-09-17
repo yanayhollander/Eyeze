@@ -19,7 +19,9 @@ struct ARViewContainer: UIViewControllerRepresentable {
     }
 }
 
-class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizerDelegate {
+class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizerDelegate, TapDetectorDelegate {
+    private var detectionHandler = DetectionHandler()
+    private var isProcessing = false
     @State private var speechSynthesizer = AVSpeechSynthesizer()
     @AppStorage("enableVibration") private var enableVibration: Bool = true
     @AppStorage("enableDebug") private var enableDebug: Bool = false
@@ -28,24 +30,20 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
     
     private var azureAiService: AzureAiService = AzureAiService()
-    
+    private var tapDetector: TapDetector = TapDetector()
     private var arView: ARSCNView!
     private var hapticFeedbackGenerator: UIImpactFeedbackGenerator?
     private var distanceLabels: [UILabel] = []
     private let audioSession = AVAudioSession.sharedInstance()
     
-    private var captureContainer: UIView!
+    private var buttonsContainer: UIView!
     private var distanceLabelsContainer: UIView!
-    private var captureButton: UIButton!
-    private var captureButtonS: UIButton!
+    private var describeObstaclesButton: UIButton!
+    private var describeSceneButton: UIButton!
     private var responseTextView: UITextView!
     
     private var processingText: String = ""
-    
-    // Store the last notification times for different texts
-    private var lastNotificationTimes: [String: Date] = [:]
-    private let DEBOUNCE_INTERVAL = 1.0
-    
+
     private var hasDrawnDistanceLabels = false
     var detectedResults: [DistanceResult] = []
     
@@ -56,11 +54,13 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         super.viewDidLoad()
         setupARView()
         setupHapticFeedback()
-        setupCaptureContainer()
+      
         setupRemoteCommandCenter()
         speechSynthesizer.delegate = self
         
         UIApplication.shared.isIdleTimerDisabled = true
+        tapDetector.delegate = self
+        setupButtonsContainer()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -119,31 +119,40 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         }
     }
     
-    private func setupCaptureContainer() {
-        captureContainer = UIView()
-        captureContainer.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(captureContainer)
+    private func setupButtonsContainer() {
+        buttonsContainer = UIView()
+        buttonsContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(buttonsContainer)
         
-        // Setup Capture Button
-        captureButton = UIButton(type: .system)
-        captureButton.translatesAutoresizingMaskIntoConstraints = false
-        captureButton.setTitle("Capture Frame", for: .normal)
-        captureButton.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold) // Larger font for accessibility
-        captureButton.setTitleColor(.white, for: .normal)
-        captureButton.backgroundColor = .systemBlue
-        captureButton.layer.cornerRadius = 10
-        captureButton.addTarget(self, action: #selector(captureButtonTapped), for: .touchUpInside)
-        captureContainer.addSubview(captureButton)
-        
-        captureButtonS = UIButton(type: .system)
-        captureButtonS.translatesAutoresizingMaskIntoConstraints = false
-        captureButtonS.setTitle("Capture Scene", for: .normal)
-        captureButtonS.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold) // Larger font for accessibility
-        captureButtonS.setTitleColor(.white, for: .normal)
-        captureButtonS.backgroundColor = .systemBlue
-        captureButtonS.layer.cornerRadius = 10
-        captureButtonS.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
-        captureContainer.addSubview(captureButtonS)
+        // Setup Describe Obstacles Button
+        describeObstaclesButton = UIButton(type: .system)
+        describeObstaclesButton.translatesAutoresizingMaskIntoConstraints = false
+        describeObstaclesButton.setTitle("Describe Obstacles", for: .normal)
+        describeObstaclesButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        describeObstaclesButton.setTitleColor(.white, for: .normal)
+        describeObstaclesButton.backgroundColor = .systemBlue
+        describeObstaclesButton.layer.cornerRadius = 10
+        describeObstaclesButton.layer.shadowColor = UIColor.black.cgColor
+        describeObstaclesButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+        describeObstaclesButton.layer.shadowOpacity = 0.5
+        describeObstaclesButton.layer.shadowRadius = 4
+        describeObstaclesButton.addTarget(self, action: #selector(describeObstacles), for: .touchUpInside)
+        buttonsContainer.addSubview(describeObstaclesButton)
+
+        // Setup Describe Scene Button
+        describeSceneButton = UIButton(type: .system)
+        describeSceneButton.translatesAutoresizingMaskIntoConstraints = false
+        describeSceneButton.setTitle("Describe Scene", for: .normal)
+        describeSceneButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        describeSceneButton.setTitleColor(.white, for: .normal)
+        describeSceneButton.backgroundColor = .systemBlue
+        describeSceneButton.layer.cornerRadius = 10
+        describeSceneButton.layer.shadowColor = UIColor.black.cgColor
+        describeSceneButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+        describeSceneButton.layer.shadowOpacity = 0.5
+        describeSceneButton.layer.shadowRadius = 4
+        describeSceneButton.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
+        buttonsContainer.addSubview(describeSceneButton)
         
         // Setup Response TextView
         responseTextView = UITextView()
@@ -153,35 +162,36 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         responseTextView.backgroundColor = .lightGray
         responseTextView.textColor = .black
         responseTextView.font = UIFont.systemFont(ofSize: 16)
-        responseTextView.isHidden = false  // Make sure it's not hidden
+        responseTextView.isHidden = false
         responseTextView.alpha = 0.0
         responseTextView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        captureContainer.addSubview(responseTextView)
+        buttonsContainer.addSubview(responseTextView)
         
         // Layout constraints
         NSLayoutConstraint.activate([
-            captureContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0),
-            captureContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
-            captureContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            captureContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0), // Ensure it stretches to the bottom
+            buttonsContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            buttonsContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            buttonsContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
+            buttonsContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            captureButton.topAnchor.constraint(equalTo: captureContainer.topAnchor),
-            captureButton.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -30),
-            captureButton.heightAnchor.constraint(equalToConstant: 50),
-            captureButton.widthAnchor.constraint(equalToConstant: 200),
-
-            captureButtonS.topAnchor.constraint(equalTo: captureContainer.topAnchor, constant: 55),
-            captureButtonS.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: -30),
-            captureButtonS.heightAnchor.constraint(equalToConstant: 50),
-            captureButtonS.widthAnchor.constraint(equalToConstant: 200),
+            describeObstaclesButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor),
+            describeObstaclesButton.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor, constant: -30),
+            describeObstaclesButton.heightAnchor.constraint(equalToConstant: 50),
+            describeObstaclesButton.widthAnchor.constraint(equalToConstant: 200),
             
-            responseTextView.leadingAnchor.constraint(equalTo: captureContainer.leadingAnchor, constant: 0),
-            responseTextView.trailingAnchor.constraint(equalTo: captureContainer.trailingAnchor, constant: 0),
+            describeSceneButton.topAnchor.constraint(equalTo: describeObstaclesButton.bottomAnchor, constant: 15),
+            describeSceneButton.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor, constant: -30),
+            describeSceneButton.heightAnchor.constraint(equalToConstant: 50),
+            describeSceneButton.widthAnchor.constraint(equalToConstant: 200),
+            
+            responseTextView.leadingAnchor.constraint(equalTo: buttonsContainer.leadingAnchor),
+            responseTextView.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor),
             responseTextView.heightAnchor.constraint(equalToConstant: 100),
-            responseTextView.bottomAnchor.constraint(equalTo: captureContainer.bottomAnchor, constant: 100) // Position it off-screen
+            responseTextView.bottomAnchor.constraint(equalTo: buttonsContainer.bottomAnchor, constant: 100) // Position it off-screen
         ])
         
-        captureContainer.layoutIfNeeded()
+        // Bring buttonsContainer to front
+        view.bringSubviewToFront(buttonsContainer)
     }
     
     func showResponseTextView(withText text: String) {
@@ -189,18 +199,18 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         responseTextView.text = text
         responseTextView.textColor = .black
         responseTextView.textAlignment = .left
-        view.bringSubviewToFront(captureContainer)
-
+        view.bringSubviewToFront(buttonsContainer)
+        
         // Update the bottom constraint to bring the view into view
-        for constraint in captureContainer.constraints {
+        for constraint in buttonsContainer.constraints {
             if constraint.firstItem as? UITextView == responseTextView && constraint.firstAttribute == .bottom {
                 constraint.constant = 0
             }
         }
-
+        
         // Animate the transition
         UIView.animate(withDuration: 0.5, animations: {
-            self.captureContainer.layoutIfNeeded()
+            self.buttonsContainer.layoutIfNeeded()
             self.responseTextView.alpha = 0.9 // Animate alpha
         })
     }
@@ -208,17 +218,17 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     func hideResponseTextView() {
         responseTextView.text = ""
         responseTextView.alpha = 0.0
-
+        
         // Update the bottom constraint to bring the view into view
-        for constraint in captureContainer.constraints {
+        for constraint in buttonsContainer.constraints {
             if constraint.firstItem as? UITextView == responseTextView && constraint.firstAttribute == .bottom {
                 constraint.constant = 100
             }
         }
-
+        
         // Animate the transition
         UIView.animate(withDuration: 0.5, animations: {
-            self.captureContainer.layoutIfNeeded()
+            self.buttonsContainer.layoutIfNeeded()
             self.responseTextView.alpha = 0.0 // Animate alpha
         })
     }
@@ -234,7 +244,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         self.detectedResults = []
         
         // Iterate through all screen points
-        for (index, point) in screenPoints.all.enumerated() {
+        for (_, point) in screenPoints.all.enumerated() {
             let hitTestResults = arView.hitTest(point, types: [.existingPlaneUsingExtent, .featurePoint])
             if let result = hitTestResults.first {
                 let distance = Float(result.distance)
@@ -260,41 +270,13 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
                 DistanceUtils.updateDistanceLabel(self.distanceLabels[index], distance: point.distance, distanceLevel: point.level)
             }
             
-            if (self.detectedResults.shouldAlert(distance: self.alertDistance)) {
-                self.triggerHapticFeedback()
-            }
-            // Process the detectedResults as needed, e.g., triggering haptic feedback for certain cells
-            //            if self.detectedResults.isTop() {
-            //                self.notify("TOP")
-            //            }
-            //
-            //            if detectedResults.isCenter() {
-            //                self.notify("Center")
-            //            }
-            //
-            //            if detectedResults.isBottom() {
-            //                self.notify("Bottom")
-            //            }
+            self.detectionHandler.handleDistanceResults(self.detectedResults)
         }
     }
     
-    private func notify(_ text: String) {
-        let now = Date()
-        if let lastTime = lastNotificationTimes[text], now.timeIntervalSince(lastTime) < DEBOUNCE_INTERVAL {
-            // If the same text was notified less than an interval, ignore it
-            return
-        }
-        
-        // Update the last notification time for this text
-        lastNotificationTimes[text] = now
-        
-        // Perform the notification
-        print(text)
-    }
-    
+
     private func triggerHapticFeedback() {
         if enableVibration {
-            self.notify("FIRE!!")
             hapticFeedbackGenerator?.impactOccurred()
         }
     }
@@ -336,7 +318,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         return UIImage(cgImage: cgImage)
     }
     
-    @objc private func captureButtonTapped() {
+    @objc private func describeObstacles() {
         
         Task {
             do {
@@ -357,6 +339,14 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     }
     
     private func TriggerPromptOnCurrentScreen(prompt: String) async throws {
+        
+        guard !isProcessing else {
+            print("Operation already in progress.")
+            return
+        }
+        
+        isProcessing = true // Set flag to indicate processing has started
+        
         guard let arFrame = captureCurrentFrame() else {
             print("Failed to capture image.")
             return
@@ -367,29 +357,30 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
             self.startTimer()
         }
         
-        Task {
-            guard let image = convertFrameToUIImage(arFrame),
-                  let base64Image = image.toBase64String() else {
-                print("Failed to capture image.")
-                return
+        
+        guard let image = convertFrameToUIImage(arFrame),
+              let base64Image = image.toBase64String() else {
+            print("Failed to capture image.")
+            return
+        }
+        
+        
+        try await azureAiService.describeStream(base64Image: base64Image, prompt: prompt)
+        
+        print("description successfully retrieved.")
+        
+        DispatchQueue.main.async {
+            self.stopTimer() // Stop the timer when the response is received
+            if !self.azureAiService.message.isEmpty {
+                self.showResponseTextView(withText: self.azureAiService.message)
+                self.azureAiService.message.speak(speechSynthesizer: self.speechSynthesizer)
             }
             
-
-            try await azureAiService.describeStream(base64Image: base64Image, prompt: prompt)
-            
-            print("description successfully retrieved.")
-            
-            DispatchQueue.main.async {
-                self.stopTimer() // Stop the timer when the response is received
-                if !self.azureAiService.message.isEmpty {
-                    self.showResponseTextView(withText: self.azureAiService.message)
-                    self.azureAiService.message.speak(speechSynthesizer: self.speechSynthesizer)
-                }
-                
-                if let error = self.azureAiService.errorMessage {
-                    self.showResponseTextView(withText: error)
-                }
+            if let error = self.azureAiService.errorMessage {
+                self.showResponseTextView(withText: error)
             }
+            
+            self.isProcessing = false
         }
     }
     
@@ -424,7 +415,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     }
     
     @objc private func capureButtonTappedRapper() -> MPRemoteCommandHandlerStatus{
-        captureButtonTapped()
+        describeObstacles()
         return .success
     }
     
@@ -444,5 +435,10 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     @objc private func describeSceneRapper() -> MPRemoteCommandHandlerStatus {
         describeScene()
         return .success
+    }
+    
+    func tapDetectorDidDetectDoubleTap(_ tapDetector: TapDetector) {
+        // Handle the double tap event in your view controller
+        //        describeObstacles()
     }
 }
