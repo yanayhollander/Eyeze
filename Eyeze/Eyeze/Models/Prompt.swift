@@ -42,7 +42,7 @@ private let OBSTACLE = """
     Image right center side is: [2, 6, 10, 14, 18, 22, 26, 30]
     Image right side is: [3, 7, 11, 15, 19, 23, 27, 31]
     Image top is: [0, 1, 2, 3]
-    Image button is: [28, 29, 30, 31]
+    Image buttom is: [28, 29, 30, 31]
 
     DistanceArray = [DISTANCES_ARRAY]
     The DistanceArray above includes 32 cells corresponding to the grid above by index. Each cell in the DistanceArray contain
