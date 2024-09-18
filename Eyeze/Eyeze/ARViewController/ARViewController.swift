@@ -367,7 +367,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
             self.stopTimer() // Stop the timer when the response is received
             if !self.azureAiService.message.isEmpty {
                 self.showResponseTextView(withText: self.azureAiService.message)
-                self.azureAiService.message.speak(speechSynthesizer: self.speechSynthesizer)
+                self.azureAiService.message.speak()
             }
             
             if let error = self.azureAiService.errorMessage {
