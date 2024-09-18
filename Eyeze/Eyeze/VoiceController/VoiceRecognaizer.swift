@@ -8,7 +8,7 @@
 import Foundation
 import Speech
 
-class VoiceController {
+class VoiceRecognaizer {
     private var audioEngine: AVAudioEngine!
     private var inputNode: AVAudioInputNode!
     private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest!
@@ -52,6 +52,11 @@ class VoiceController {
         
         recognitionTask = recogniazer.recognitionTask(with: recognitionRequest) { result, error in
             if let result = result {
+                print("result.isfinal = \(result.isFinal)")
+                if result.isFinal{
+                    self.stopRecording()
+                    return
+                }
                 self.recognitionResult = result
             } else if let error = error {
                 print("Error transcribing audio: \(error.localizedDescription)")
@@ -73,10 +78,11 @@ class VoiceController {
     
     func stopRecording() {
         recognitionRequest.endAudio()
-        recognitionTask?.cancel()
+        recognitionTask?.finish()
         recognitionTask = nil
         audioEngine.inputNode.removeTap(onBus: 0)
         audioEngine.stop()
+        resetAudioSession()
         isRunning = false
         print("Recording stopped.")
     }
@@ -89,6 +95,15 @@ class VoiceController {
         } catch {
             print("Failed to configure audio session")
             return
+        }
+    }
+    
+    private func resetAudioSession(){
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("Failed to deactivate audio session")
         }
     }
 }
