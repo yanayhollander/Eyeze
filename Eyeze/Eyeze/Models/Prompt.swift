@@ -64,15 +64,15 @@ private let OBSTACLE = """
 
 
 let SCENE = """
-    Describe the image for your's blind friend like he is inside of the image.
+    Describe the image for your's blind friend. He is in the same room and needs your description to understand his surrounding.
     Guidance:
     - Don't repeat yourself
-    - Don't use the word image
-    - Write it short, 3 sentence max.
+    - Don't use the word image and blind
+    - Write it short, 2 sentence max.
     - Describe the facial expressions generally
-    - Put your's friend inside of the description
     - Don't describe your's friend feelings
     - Don't replace the friend with any person in the image
+    - Don't assume anything about the blind friend
 """
 
 
