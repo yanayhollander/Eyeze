@@ -87,9 +87,9 @@ extension [DistanceResult] {
         }
         
         if maxAlertCount > 0 {
-            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "Stop \(alertLocation))")
+            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "Stop \(alertLocation)")
         } else if maxWarningCount > 0 {
-            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Caution \(warningLocation))")
+            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Caution \(warningLocation)")
         }
         
         return CheckDistanceResult(shouldAlert: false, level: .detection, location: "")
