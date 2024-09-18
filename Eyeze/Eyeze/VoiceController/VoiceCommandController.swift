@@ -44,6 +44,7 @@ import AVFoundation
                 let command = self.voiceRecognaizer.GetLatestsRecordingTranscription()
                 if let action = self.commands[command] {
                     print("executing command \(command)")
+                    self.voiceRecognaizer.resetSavedTranscription()
                     action()
                 } else {
                     print("failed to find command")
