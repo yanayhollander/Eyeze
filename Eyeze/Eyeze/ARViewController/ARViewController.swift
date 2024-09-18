@@ -58,16 +58,8 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         setupRemoteCommandCenter()
         speechSynthesizer.delegate = self
         
-        UIApplication.shared.isIdleTimerDisabled = true
         tapDetector.delegate = self
         setupButtonsContainer()
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        // Re-enable the idle timer
-        UIApplication.shared.isIdleTimerDisabled = false
     }
     
     override func viewDidLayoutSubviews() {
@@ -117,6 +109,8 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         distanceLabels.forEach {
             distanceLabelsContainer.addSubview($0)
         }
+        
+        view.bringSubviewToFront(buttonsContainer)
     }
     
     private func setupButtonsContainer() {
@@ -124,33 +118,33 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         buttonsContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonsContainer)
         
-        // Setup Describe Obstacles Button
-        describeObstaclesButton = UIButton(type: .system)
-        describeObstaclesButton.translatesAutoresizingMaskIntoConstraints = false
-        describeObstaclesButton.setTitle("Describe Obstacles", for: .normal)
-        describeObstaclesButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        describeObstaclesButton.setTitleColor(.white, for: .normal)
-        describeObstaclesButton.backgroundColor = .systemBlue
-        describeObstaclesButton.layer.cornerRadius = 10
-        describeObstaclesButton.layer.shadowColor = UIColor.black.cgColor
-        describeObstaclesButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        describeObstaclesButton.layer.shadowOpacity = 0.5
-        describeObstaclesButton.layer.shadowRadius = 4
-        describeObstaclesButton.addTarget(self, action: #selector(describeObstacles), for: .touchUpInside)
-        buttonsContainer.addSubview(describeObstaclesButton)
+//        // Setup Describe Obstacles Button
+//        describeObstaclesButton = UIButton(type: .system)
+//        describeObstaclesButton.translatesAutoresizingMaskIntoConstraints = false
+//        describeObstaclesButton.setTitle("Obstacles", for: .normal)
+//        describeObstaclesButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+//        describeObstaclesButton.setTitleColor(.systemGray, for: .normal)
+//        describeObstaclesButton.backgroundColor = .black
+//        describeObstaclesButton.layer.cornerRadius = 0
+//        describeObstaclesButton.layer.shadowColor = UIColor.black.cgColor
+//        describeObstaclesButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+//        describeObstaclesButton.layer.shadowOpacity = 0.5
+//        describeObstaclesButton.layer.shadowRadius = 2
+//        describeObstaclesButton.addTarget(self, action: #selector(describeObstacles), for: .touchUpInside)
+//        buttonsContainer.addSubview(describeObstaclesButton)
 
         // Setup Describe Scene Button
         describeSceneButton = UIButton(type: .system)
         describeSceneButton.translatesAutoresizingMaskIntoConstraints = false
-        describeSceneButton.setTitle("Describe Scene", for: .normal)
-        describeSceneButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        describeSceneButton.setTitleColor(.white, for: .normal)
-        describeSceneButton.backgroundColor = .systemBlue
-        describeSceneButton.layer.cornerRadius = 10
-        describeSceneButton.layer.shadowColor = UIColor.black.cgColor
-        describeSceneButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        describeSceneButton.layer.shadowOpacity = 0.5
-        describeSceneButton.layer.shadowRadius = 4
+//        describeSceneButton.setTitle("Scene", for: .normal)
+//        describeSceneButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .bold)
+        describeSceneButton.setTitleColor(.systemGray, for: .normal)
+        describeSceneButton.backgroundColor = .clear
+        describeSceneButton.layer.cornerRadius = 0
+//        describeSceneButton.layer.shadowColor = UIColor.black.cgColor
+//        describeSceneButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+//        describeSceneButton.layer.shadowOpacity = 0.5
+//        describeSceneButton.layer.shadowRadius = 2
         describeSceneButton.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
         buttonsContainer.addSubview(describeSceneButton)
         
@@ -171,18 +165,20 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         NSLayoutConstraint.activate([
             buttonsContainer.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             buttonsContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            buttonsContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
+            buttonsContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             buttonsContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            describeObstaclesButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor),
-            describeObstaclesButton.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor, constant: -30),
-            describeObstaclesButton.heightAnchor.constraint(equalToConstant: 50),
-            describeObstaclesButton.widthAnchor.constraint(equalToConstant: 200),
-            
-            describeSceneButton.topAnchor.constraint(equalTo: describeObstaclesButton.bottomAnchor, constant: 15),
-            describeSceneButton.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor, constant: -30),
-            describeSceneButton.heightAnchor.constraint(equalToConstant: 50),
-            describeSceneButton.widthAnchor.constraint(equalToConstant: 200),
+            // describeObstaclesButton Constraints
+//            describeObstaclesButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor),
+//            describeObstaclesButton.leadingAnchor.constraint(equalTo: buttonsContainer.leadingAnchor), // Align to the left
+//            describeObstaclesButton.heightAnchor.constraint(equalToConstant: 30),
+//            describeObstaclesButton.widthAnchor.constraint(equalTo: buttonsContainer.widthAnchor, multiplier: 0.5), // Set width to 50% of the container
+
+            // describeSceneButton Constraints
+            describeSceneButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor), // Align to the top of the container
+            describeSceneButton.leadingAnchor.constraint(equalTo: buttonsContainer.leadingAnchor), // Place next to describeObstaclesButton
+            describeSceneButton.heightAnchor.constraint(equalTo: buttonsContainer.heightAnchor),
+            describeSceneButton.widthAnchor.constraint(equalTo: buttonsContainer.widthAnchor),// Set width to 50% of the container
             
             responseTextView.leadingAnchor.constraint(equalTo: buttonsContainer.leadingAnchor),
             responseTextView.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor),
@@ -400,18 +396,18 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     }
     
     private func setupRemoteCommandCenter() {
-//        MPRemoteCommandCenter.shared()
-//            .playCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-//        MPRemoteCommandCenter.shared()
-//            .stopCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-//        MPRemoteCommandCenter.shared()
-//            .togglePlayPauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-//        MPRemoteCommandCenter.shared()
-//            .pauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-//        MPRemoteCommandCenter.shared()
-//            .nextTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
-//        MPRemoteCommandCenter.shared()
-//            .previousTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
+        MPRemoteCommandCenter.shared()
+            .playCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .stopCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .togglePlayPauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .pauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+        MPRemoteCommandCenter.shared()
+            .nextTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
+        MPRemoteCommandCenter.shared()
+            .previousTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
     }
     
     @objc private func capureButtonTappedRapper() -> MPRemoteCommandHandlerStatus{
