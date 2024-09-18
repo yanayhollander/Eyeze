@@ -79,17 +79,17 @@ extension [DistanceResult] {
         }
         
         if alertCount > MAX_SQUARE_THRESHOLD {
-            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "STOP")
+            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "Stop")
         }
         
         if warningCount > MAX_SQUARE_THRESHOLD {
-            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Careful")
+            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Caution")
         }
         
         if maxAlertCount > 0 {
-            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "STOP \(alertLocation))")
+            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "Stop \(alertLocation))")
         } else if maxWarningCount > 0 {
-            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Careful \(warningLocation))")
+            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Caution \(warningLocation))")
         }
         
         return CheckDistanceResult(shouldAlert: false, level: .detection, location: "")
@@ -100,5 +100,4 @@ struct CheckDistanceResult {
     var shouldAlert: Bool
     var level: DistanceLevel
     var location: String
-    
 }
