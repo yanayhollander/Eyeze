@@ -80,14 +80,10 @@ extension [DistanceResult] {
         
         if alertCount > MAX_SQUARE_THRESHOLD {
             return CheckDistanceResult(shouldAlert: true, level: .alert, location: "Stop")
-        }
-        
-        if warningCount > MAX_SQUARE_THRESHOLD {
-            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Caution")
-        }
-        
-        if maxAlertCount > 0 {
+        } else if maxAlertCount > 0 {
             return CheckDistanceResult(shouldAlert: true, level: .alert, location: "Stop \(alertLocation)")
+        } else if warningCount > MAX_SQUARE_THRESHOLD {
+            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Caution")
         } else if maxWarningCount > 0 {
             return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Caution \(warningLocation)")
         }

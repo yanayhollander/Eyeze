@@ -400,18 +400,18 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     }
     
     private func setupRemoteCommandCenter() {
-        MPRemoteCommandCenter.shared()
-            .playCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-        MPRemoteCommandCenter.shared()
-            .stopCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-        MPRemoteCommandCenter.shared()
-            .togglePlayPauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-        MPRemoteCommandCenter.shared()
-            .pauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
-        MPRemoteCommandCenter.shared()
-            .nextTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
-        MPRemoteCommandCenter.shared()
-            .previousTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
+//        MPRemoteCommandCenter.shared()
+//            .playCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+//        MPRemoteCommandCenter.shared()
+//            .stopCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+//        MPRemoteCommandCenter.shared()
+//            .togglePlayPauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+//        MPRemoteCommandCenter.shared()
+//            .pauseCommand.addTarget(self, action: #selector(capureButtonTappedRapper))
+//        MPRemoteCommandCenter.shared()
+//            .nextTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
+//        MPRemoteCommandCenter.shared()
+//            .previousTrackCommand.addTarget(self, action: #selector(describeSceneRapper))
     }
     
     @objc private func capureButtonTappedRapper() -> MPRemoteCommandHandlerStatus{

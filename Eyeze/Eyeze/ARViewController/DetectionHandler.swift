@@ -24,17 +24,44 @@ class DetectionHandler {
 
     private let MIN_SPEAK_INTERVAL: TimeInterval = 2.0
 
-    private let SPEAK_DEBOUNCE_DISTANCE: Double = 10.0
-       private var useRightSpeaker: Bool = true
+    private let SPEAK_DEBOUNCE_DISTANCE: Double = 0.1
+    private var useRightSpeaker: Bool = true
+    private var lastSpeakTime: Date?
+    
     // Store the last spoken texts with their distance and time
      private var lastSpokenData: [String: (distance: Double, time: Date)] = [:]
      
+    private var previousDetectedResults: [DistanceResult] = []
     
     init() {
         hapticFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
         hapticFeedbackGenerator?.prepare()
         
+        // Pre-warm the AVSpeechSynthesizer on the main thread
+        prepareSpeechSynthesizer()
         
+        // Pre-set the audio session on the background thread
+        prepareAudioSession()
+    }
+
+    private func prepareSpeechSynthesizer() {
+        // Call a silent utterance on the main thread to prepare the AVSpeechSynthesizer
+        DispatchQueue.main.async {
+            let silentUtterance = AVSpeechUtterance(string: " ")
+            self.speechSynthesizer.speak(silentUtterance)
+        }
+    }
+
+    private func prepareAudioSession() {
+        DispatchQueue.global(qos: .background).async {
+            do {
+                // Use playAndRecord category with defaultToSpeaker option
+                try self.audioSession.setCategory(.playAndRecord, options: .defaultToSpeaker)
+                try self.audioSession.setActive(true, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("Failed to set audio session category: \(error)")
+            }
+        }
     }
     
     func handleDistanceResults(_ detectedResults: [DistanceResult]) {
@@ -53,8 +80,13 @@ class DetectionHandler {
         let interval = calculateHapticInterval(for: minDistance)
         maybeTriggerHapticFeedback(withInterval: interval)
         
-        // Perform the notification
-                speak(checkDistance.location, force: checkDistance.level == .alert, distance: minDistance)
+        if hasSignificantChanges(from: previousDetectedResults, to: detectedResults) {
+            previousDetectedResults = detectedResults
+
+            // Perform the notification
+            speak(checkDistance.location, distance: minDistance)
+        }
+
         
     }
     
@@ -95,29 +127,18 @@ class DetectionHandler {
     }
 
     
-    private func speak(_ text: String, force: Bool, distance: Double) {
+    private func speak(_ text: String, distance: Double) {
         guard enableAlerts else { return }
         
         let now = Date()
-        
-        // Check if this text was spoken before
-        if let lastData = lastSpokenData[text] {
-            // Calculate the distance difference
-            let distanceDifference = lastData.distance - distance
-            // Check if the distance has decreased by more than the debounce distance
-            if distanceDifference < SPEAK_DEBOUNCE_DISTANCE { 
- 
-//                // If the distance has not decreased enough, and not enough time has passed
-//                if now.timeIntervalSince(lastData.time) < MIN_SPEAK_INTERVAL {
-//                    return // Ignore if the change is less than debounce distance and not enough time has passed
-//                }
-                return
-            }
+
+        if let lastTime = lastSpeakTime, now.timeIntervalSince(lastTime) < 1 {
+            // If the same text was notified less than an interval, ignore it
+            return
         }
-        
-        // Update the last spoken data
-        lastSpokenData[text] = (distance: distance, time: now)
-        
+
+        lastSpeakTime = now
+
         DispatchQueue.global(qos: .userInitiated).async {
             let utterance = AVSpeechUtterance(string: text)
             utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
@@ -125,26 +146,41 @@ class DetectionHandler {
             // Alternate between right and left speakers
             self.useRightSpeaker.toggle()
             
-            // Update audio session category
-            do {
-                try self.audioSession.setCategory(.playback, options: self.useRightSpeaker ? .defaultToSpeaker : .mixWithOthers)
-                try self.audioSession.setActive(true)
-            } catch {
-                print("Failed to set audio session category: \(error)")
-            }
-            
             // Execute speech on the main thread
             DispatchQueue.main.async {
-                print("SPEAK \(text)")
-//                self.speechSynthesizer.speak(utterance)
+                self.speechSynthesizer.speak(utterance)
             }
         }
     }
+    
+    private func hasSignificantChanges(from oldResults: [DistanceResult], to newResults: [DistanceResult]) -> Bool {
+        // Find the minimum distance from the old results
+        guard let oldMinDistance = oldResults.compactMap({ $0.distance }).min() else {
+            return true // If no valid minimum distance in old results, consider it a significant change
+        }
+
+        // Find the minimum distance from the new results
+        guard let newMinDistance = newResults.compactMap({ $0.distance }).min() else {
+            return true // If no valid minimum distance in new results, consider it a significant change
+        }
+
+        // Sensitivity factor increases as the distance decreases, capped at a maximum value
+        let maxSensitivityFactor: Double = 10.0 // Cap the sensitivity factor to avoid excessive sensitivity
+        let sensitivityFactor = min(1 / max(newMinDistance, 0.1), maxSensitivityFactor) // Avoid division by zero and excessive sensitivity
+
+        // Define a base threshold
+        let baseThreshold = 0.1
+        
+        // Adjust threshold based on sensitivity
+        let adjustedThreshold = baseThreshold * sensitivityFactor
+
+        // Add an additional check for distances below a critical threshold (e.g., 0.5m)
+        if newMinDistance < alertDistance {
+            return true // Always consider it significant if the new minimum distance is very close to 0m
+        }
+        
+        // Check if the difference between the minimum distances is significant
+        return abs(oldMinDistance - newMinDistance) > adjustedThreshold
+    }
 }
-
-
-//print("SPEAK \(text)")
-//print("SPEAK \(text)")
-//print("SPEAK \(text)")
-//print("SPEAK \(text)")
 
