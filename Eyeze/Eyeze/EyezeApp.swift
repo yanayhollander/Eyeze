@@ -12,6 +12,14 @@ struct EyezeApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear {
+                    // Disable screen dimming and locking
+                    UIApplication.shared.isIdleTimerDisabled = true
+                }
+                .onDisappear {
+                    // Enable screen dimming and locking
+                    UIApplication.shared.isIdleTimerDisabled = false
+                }
         }
     }
 }
