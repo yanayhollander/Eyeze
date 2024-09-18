@@ -10,14 +10,14 @@ import Foundation
 
 let MAX_SQUARE_THRESHOLD = 15
 
-//[[ 1,  2,  3,  4],
-// [ 5,  6,  7,  8],
-// [ 9,  10, 11, 12],
-// [13, 14, 15, 16],
-// [17, 18, 19, 20],
-// [21, 22, 23, 24],
-// [25, 26, 27, 28],
-// [29, 30, 31, 32]].
+//[[ 0,  1,  2,  3],
+// [ 4,  5,  6,  7],
+// [ 8,  9, 10, 11],
+// [12, 13, 14, 15],
+// [16, 17, 18, 19],
+// [20, 21, 22, 23],
+// [24, 25, 26, 27],
+// [28, 29, 30, 31]].
 extension [DistanceResult] {
     private func contains(indices: Set<Int>, level: DistanceLevel) -> Int {
         let filtered = self.filter { $0.level == level}
@@ -40,15 +40,15 @@ extension [DistanceResult] {
     
     private var gridAreas: [GridArea: Set<Int>] {
         return [
-            .topLeft: [1,2,5,6,9,10],
-            .topRight: [3,4,7,8,11,12],
-            .top: [2,3],
-            .left: [9,13,17,21],
-            .center: [14,15,18,19],
-            .right: [12,16,20,24],
-            .bottomRight: [23,24,27,28,31,32],
-            .bottomLeft: [21,22,25,26,29,30],
-            .bottom: [30,31]
+            .topLeft: [0,1,4,5,8,9],
+            .topRight: [2,3,6,7,10,11],
+            .top: [1,2],
+            .left: [8,12,16,20],
+            .center: [13,14,17,18],
+            .right: [11,15,19,23],
+            .bottomRight: [22,23,26,27,30,31],
+            .bottomLeft: [20,21,24,25,28,29],
+            .bottom: [29,30]
         ]
     }
     

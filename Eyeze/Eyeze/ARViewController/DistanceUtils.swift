@@ -78,7 +78,7 @@ class DistanceUtils {
         // Mapping each point to its corresponding cell index (1-9)
         let allPoints = screenPoints.top + screenPoints.center + screenPoints.bottom
         if let index = allPoints.firstIndex(of: point) {
-            return index + 1 // Convert zero-based index to 1-based
+            return index
         }
         return nil
     }
