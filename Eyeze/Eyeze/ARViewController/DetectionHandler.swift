@@ -79,6 +79,7 @@ class DetectionHandler {
         
         DispatchQueue.global(qos: .userInitiated).async {
             let utterance = AVSpeechUtterance(string: text)
+            utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
             
             // Execute speech on the main thread
             DispatchQueue.main.async {
