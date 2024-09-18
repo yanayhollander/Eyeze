@@ -146,6 +146,22 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
 //        describeSceneButton.layer.shadowOpacity = 0.5
 //        describeSceneButton.layer.shadowRadius = 2
         describeSceneButton.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
+        
+        // Single-tap action using the existing target
+        describeSceneButton.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
+
+        // Double-tap action
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(describeObstacles))
+        doubleTapGesture.numberOfTapsRequired = 2
+        describeSceneButton.addGestureRecognizer(doubleTapGesture)
+
+        // Single-tap gesture (to differentiate between single and double taps)
+        let singleTapGesture = UITapGestureRecognizer(target: self, action: #selector(describeScene))
+        singleTapGesture.numberOfTapsRequired = 1
+        // Ensure the single tap is recognized only if the double tap fails
+        singleTapGesture.require(toFail: doubleTapGesture)
+        describeSceneButton.addGestureRecognizer(singleTapGesture)
+        
         buttonsContainer.addSubview(describeSceneButton)
         
         // Setup Response TextView
@@ -369,7 +385,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
             self.stopTimer() // Stop the timer when the response is received
             if !self.azureAiService.message.isEmpty {
                 self.showResponseTextView(withText: self.azureAiService.message)
-                self.azureAiService.message.speak()
+                self.azureAiService.message.speak(onEnd: self.hideResponseTextView)
             }
             
             if let error = self.azureAiService.errorMessage {

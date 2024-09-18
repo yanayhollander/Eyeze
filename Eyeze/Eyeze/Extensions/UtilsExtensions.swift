@@ -33,10 +33,23 @@ extension UIImage {
 }
 
 extension String {
-    func speak() {
+    func speak(onEnd: (() -> Void)? = nil) {
         let utterance = AVSpeechUtterance(string: self)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        
         speechSynthesizer.speak(utterance)
+        
+        DispatchQueue.global(qos: .background).async {
+            sleep(2)
+            
+            while speechSynthesizer.isSpeaking {
+                sleep(1) // Check every second
+            }
+
+            DispatchQueue.main.async {
+                onEnd?()
+            }
+        }
     }
 }
