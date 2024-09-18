@@ -62,14 +62,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         UIApplication.shared.isIdleTimerDisabled = true
         tapDetector.delegate = self
         setupButtonsContainer()
-        
-        voiceCommandController = VoiceCommandController()
-        voiceCommandController.addCommand("Describe scene", action: describeScene)
-        voiceCommandController.addCommand("Describe obstacles", action: describeObstacles)
-        voiceCommandController.setOnCommandNotFound {
-            let utteranse = AVSpeechUtterance(string: "could not reconiaze the command, please try again")
-            self.speechSynthesizer.speak(utteranse)
-        }
+        setUpVoiceControl()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -182,6 +175,17 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         
         // Bring buttonsContainer to front
         view.bringSubviewToFront(buttonsContainer)
+    }
+    
+    func setUpVoiceControl(){
+        voiceCommandController = VoiceCommandController()
+        voiceCommandController.addCommand("Describe scene", action: describeScene)
+        voiceCommandController.addCommand("Describe the scene", action: describeScene)
+        voiceCommandController.addCommand("Describe obstacles", action: describeObstacles)
+        voiceCommandController.setOnCommandNotFound {
+            let utteranse = AVSpeechUtterance(string: "could not reconiaze the command, please try again")
+            self.speechSynthesizer.speak(utteranse)
+        }
     }
     
     func showResponseTextView(withText text: String) {
