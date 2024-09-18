@@ -8,7 +8,7 @@
 import Foundation
 
 
-let MAX_SQUARE_THRESHOLD = 10
+let MAX_SQUARE_THRESHOLD = 15
 
 //[[ 1,  2,  3,  4],
 // [ 5,  6,  7,  8],
