@@ -8,6 +8,8 @@
 import UIKit
 import AVFAudio
 
+let speechSynthesizer = AVSpeechSynthesizer()
+
 extension UIImage {
     func toBase64String() -> String? {
         guard let imageData = self.jpegData(compressionQuality: 0.5) else {
@@ -31,7 +33,7 @@ extension UIImage {
 }
 
 extension String {
-    func speak(speechSynthesizer: AVSpeechSynthesizer) {
+    func speak() {
         let utterance = AVSpeechUtterance(string: self)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
