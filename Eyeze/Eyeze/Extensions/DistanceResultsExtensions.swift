@@ -53,38 +53,43 @@ extension [DistanceResult] {
     }
     
     func checkDistances() -> CheckDistanceResult {
+        var alertCount = 0
+        var warningCount = 0
         var maxAlertCount = 0
         var maxWarningCount = 0
         var alertLocation: String = ""
         var warningLocation: String = ""
         
         for (area, indices) in gridAreas {
-            let alertCount = contains(indices: indices, level: .alert)
-            let warningCount = contains(indices: indices, level: .warning)
+            let areaAlertCount = contains(indices: indices, level: .alert)
+            let areaWarningCount = contains(indices: indices, level: .warning)
             
-            if alertCount > maxAlertCount {
-                maxAlertCount = alertCount
+            alertCount += areaAlertCount
+            warningCount += areaWarningCount
+            
+            if areaAlertCount > maxAlertCount {
+                maxAlertCount = areaAlertCount
                 alertLocation = "\(area)"
             }
             
-            if warningCount > maxWarningCount {
-                maxWarningCount = warningCount
+            if areaWarningCount > maxWarningCount {
+                maxWarningCount = areaWarningCount
                 warningLocation = "\(area)"
             }
         }
         
-        if maxAlertCount > MAX_SQUARE_THRESHOLD {
-            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "STOP \(alertLocation))")
+        if alertCount > MAX_SQUARE_THRESHOLD {
+            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "STOP")
         }
         
-        if maxWarningCount > MAX_SQUARE_THRESHOLD {
-            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Careful \(warningLocation)")
+        if warningCount > MAX_SQUARE_THRESHOLD {
+            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Careful")
         }
         
         if maxAlertCount > 0 {
-            return CheckDistanceResult(shouldAlert: true, level: .alert, location: alertLocation)
+            return CheckDistanceResult(shouldAlert: true, level: .alert, location: "STOP \(alertLocation))")
         } else if maxWarningCount > 0 {
-            return CheckDistanceResult(shouldAlert: true, level: .warning, location: warningLocation)
+            return CheckDistanceResult(shouldAlert: true, level: .warning, location: "Careful \(warningLocation))")
         }
         
         return CheckDistanceResult(shouldAlert: false, level: .detection, location: "")
