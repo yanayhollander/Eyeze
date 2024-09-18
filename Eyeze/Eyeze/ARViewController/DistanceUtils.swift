@@ -12,8 +12,6 @@ struct ScreenPoints {
     var top: [CGPoint]
     var center: [CGPoint]
     var bottom: [CGPoint]
-    //    var left: [CGPoint]
-    //    var right: [CGPoint]
     var all: [CGPoint] {
         return top + center + bottom
     }
@@ -69,7 +67,7 @@ class DistanceUtils {
         }
         
         // Check which cell the point belongs to and add it to the detectedCells
-        if let cellIndex = getCellIndex(for: point, in: screenPoints), distance < alertDistance {
+        if let cellIndex = getCellIndex(for: point, in: screenPoints) {
             distanceResult.detectedCells.append(cellIndex)
         }
         
@@ -126,36 +124,5 @@ class DistanceUtils {
         // Apply the colors and transparency to the label
         label.backgroundColor = bgColor
         label.textColor = textColor
-    }
-}
-
-extension [DistanceResult] {
-    private func contains(indices: ClosedRange<Int>) -> Bool {
-        let flatMap = self.flatMap { $0.detectedCells }
-        var isExists = false
-        indices.forEach { ind in
-            if(flatMap.contains(ind)) {
-                isExists = true
-            }
-        }
-        
-        return isExists
-    }
-    
-    func isTop() -> Bool {
-        return contains(indices: 0...7)
-    }
-    
-    func isCenter() -> Bool {
-        return contains(indices: 8...23)
-    }
-    
-    func isBottom() -> Bool {
-        return contains(indices: 24...31)
-    }
-    
-    func shouldAlert(distance: Double) -> Bool {
-        // Check if any DistanceResult in the array has a distance below alertDistance
-        return self.contains { $0.distance < distance }
     }
 }

@@ -69,7 +69,6 @@ import SwiftOpenAI
             let stream = try await service.startStreamedChat(parameters: parameters)
             for try await result in stream {
                 let content = result.choices.first?.delta.content ?? ""
-                print("DELTA !!! : \(content)")
                 self.message += content
            }
 

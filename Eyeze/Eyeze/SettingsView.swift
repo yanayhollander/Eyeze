@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("enableVibration") private var enableVibration: Bool = true
+    @AppStorage("enableAlerts") private var enableAlerts: Bool = true
     @AppStorage("detectionDistance") private var detectionDistance: Double = DistanceLevel.DETECTION_DEFAULT_VALUE
     @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
     @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
@@ -19,6 +20,9 @@ struct SettingsView: View {
     var body: some View {
         Form {
             Section(header: Text(languageManager.localizedString(forKey: "Settings"))) {
+                Toggle(isOn: $enableAlerts) {
+                    Text("Enable Alerts")
+                }
                 Toggle(isOn: $enableVibration) {
                     Text(languageManager.localizedString(forKey: "Enable Vibration"))
                 }
@@ -31,17 +35,6 @@ struct SettingsView: View {
                             Text(languageManager.localizedString(forKey: "\(level.rawValue) Distance"))
                         }
                     }
-                }
-            }
-            
-            Section(header: Text(languageManager.localizedString(forKey: "Language"))) {
-                Picker(languageManager.localizedString(forKey: "Select Language"), selection: $selectedLanguage) {
-                    Text("English").tag("en")
-                    Text("Hebrew").tag("he")
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .onChange(of: selectedLanguage) { newLanguage in
-                    languageManager.setLanguage(newLanguage)
                 }
             }
         }
