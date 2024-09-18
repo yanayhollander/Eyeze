@@ -14,7 +14,7 @@ class DetectionHandler {
     private let SPEAK_DEBOUNCE_INTERVAL: TimeInterval = 4.0
     private let DISTANCE_INTERVAL = 0.1
     private let MAX_HAPTIC_INTERVAL: TimeInterval = 5.0
-    private let MIN_HAPTIC_INTERVAL: TimeInterval = 0.05
+    private let MIN_HAPTIC_INTERVAL: TimeInterval = 0.005
     
     private var hapticFeedbackGenerator: UIImpactFeedbackGenerator?
     private var lastNotificationTimes: [String: Date] = [:]
@@ -59,8 +59,10 @@ class DetectionHandler {
         // Normalize the distance to a value between 0 and 1 for mapping to haptic interval
         let normalizedDistance = min(max(distance / maxDistance, 0.0), 1.0)
         
+        let adjust = pow(normalizedDistance, 2)
+        
         // Invert the normalized distance so that a smaller distance results in a shorter interval
-        let invertedDistance = 1.0 - normalizedDistance
+        let invertedDistance = 1.0 - adjust
         
         // Map the inverted distance to the haptic interval range
         return MIN_HAPTIC_INTERVAL + (MAX_HAPTIC_INTERVAL - MIN_HAPTIC_INTERVAL) * (1.0 - invertedDistance)
