@@ -50,6 +50,8 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     private var timer: Timer?
     private var elapsedTime: TimeInterval = 0.0
     
+    private var voiceCommandController: VoiceCommandController!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupARView()
@@ -61,6 +63,14 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         UIApplication.shared.isIdleTimerDisabled = true
         tapDetector.delegate = self
         setupButtonsContainer()
+        
+        voiceCommandController = VoiceCommandController()
+        voiceCommandController.addCommand("describe scene", action: describeScene)
+        voiceCommandController.addCommand("describe obstacles", action: describeObstacles)
+        voiceCommandController.setOnCommandNotFound {
+            let utteranse = AVSpeechUtterance(string: "could not reconiaze the command, please try again")
+            self.speechSynthesizer.speak(utteranse)
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -127,7 +137,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         // Setup Describe Obstacles Button
         describeObstaclesButton = UIButton(type: .system)
         describeObstaclesButton.translatesAutoresizingMaskIntoConstraints = false
-        describeObstaclesButton.setTitle("Describe Obstacles", for: .normal)
+        describeObstaclesButton.setTitle("Voice command", for: .normal)
         describeObstaclesButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         describeObstaclesButton.setTitleColor(.white, for: .normal)
         describeObstaclesButton.backgroundColor = .systemBlue
@@ -136,13 +146,14 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         describeObstaclesButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         describeObstaclesButton.layer.shadowOpacity = 0.5
         describeObstaclesButton.layer.shadowRadius = 4
-        describeObstaclesButton.addTarget(self, action: #selector(describeObstacles), for: .touchUpInside)
+        describeObstaclesButton.addTarget(self, action: #selector(self.voiceCommandController.startListening), for: .touchUpInside)
+        //describeObstaclesButton.addTarget(self, action: #selector(self.voiceCommandController.execute), for: .touchUpInside)
         buttonsContainer.addSubview(describeObstaclesButton)
 
         // Setup Describe Scene Button
         describeSceneButton = UIButton(type: .system)
         describeSceneButton.translatesAutoresizingMaskIntoConstraints = false
-        describeSceneButton.setTitle("Describe Scene", for: .normal)
+        describeSceneButton.setTitle("execute", for: .normal)
         describeSceneButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         describeSceneButton.setTitleColor(.white, for: .normal)
         describeSceneButton.backgroundColor = .systemBlue
@@ -151,7 +162,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         describeSceneButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         describeSceneButton.layer.shadowOpacity = 0.5
         describeSceneButton.layer.shadowRadius = 4
-        describeSceneButton.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
+        describeSceneButton.addTarget(self, action: #selector(self.voiceCommandController.execute), for: .touchUpInside)
         buttonsContainer.addSubview(describeSceneButton)
         
         // Setup Response TextView

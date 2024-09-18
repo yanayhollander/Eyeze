@@ -31,7 +31,7 @@ import AVFoundation
         voiceRecognaizer.startRecordToTranscription()
     }
     
-    func execute(transcription: String) {
+    @objc func execute() {
         voiceRecognaizer.stopRecording()
         let command = voiceRecognaizer.GetLatestsRecordingTranscription()
         
