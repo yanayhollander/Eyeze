@@ -183,8 +183,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         voiceCommandController.addCommand("Describe the scene", action: describeScene)
         voiceCommandController.addCommand("Describe obstacles", action: describeObstacles)
         voiceCommandController.setOnCommandNotFound {
-            let utteranse = AVSpeechUtterance(string: "could not reconiaze the command, please try again")
-            self.speechSynthesizer.speak(utteranse)
+            "Could not recognize the command. Please try again".speak()
         }
     }
     

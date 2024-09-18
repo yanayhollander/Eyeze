@@ -38,8 +38,12 @@ class VoiceRecognaizer {
         return recognitionTask.state == .completed
     }
     
+    func resetSavedTranscription() {
+        recognitionResult = nil
+    }
+    
     func startRecordToTranscription(language: String = Language.english) {
-        guard let recogniazer = SFSpeechRecognizer(locale:  Locale(identifier: "en-US")) else {
+        guard let recogniazer = SFSpeechRecognizer(locale:  Locale(identifier: language)) else {
             print("Speech recognition is not available on this device")
             return
         }
