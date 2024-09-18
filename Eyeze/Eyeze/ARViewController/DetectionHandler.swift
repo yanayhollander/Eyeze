@@ -10,7 +10,7 @@ class DetectionHandler {
     @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
     @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
     @AppStorage("enableVibration") private var enableVibration: Bool = true
-
+    
     let audioSession = AVAudioSession.sharedInstance()
     
     private let DISTANCE_INTERVAL = 0.1
@@ -21,16 +21,16 @@ class DetectionHandler {
     private let speechSynthesizer = AVSpeechSynthesizer()
     private var lastMinDistance: Double?
     private var lastHapticTime: Date?
-
+    
     private let MIN_SPEAK_INTERVAL: TimeInterval = 2.0
-
+    
     private let SPEAK_DEBOUNCE_DISTANCE: Double = 0.1
     private var useRightSpeaker: Bool = true
     private var lastSpeakTime: Date?
     
     // Store the last spoken texts with their distance and time
-     private var lastSpokenData: [String: (distance: Double, time: Date)] = [:]
-     
+    private var lastSpokenData: [String: (distance: Double, time: Date)] = [:]
+    
     private var previousDetectedResults: [DistanceResult] = []
     
     init() {
@@ -43,7 +43,7 @@ class DetectionHandler {
         // Pre-set the audio session on the background thread
         prepareAudioSession()
     }
-
+    
     private func prepareSpeechSynthesizer() {
         // Call a silent utterance on the main thread to prepare the AVSpeechSynthesizer
         DispatchQueue.main.async {
@@ -51,7 +51,7 @@ class DetectionHandler {
             self.speechSynthesizer.speak(silentUtterance)
         }
     }
-
+    
     private func prepareAudioSession() {
         DispatchQueue.global(qos: .background).async {
             do {
@@ -75,18 +75,18 @@ class DetectionHandler {
             return
         }
         
-
+        
         // Adjust haptic feedback interval
         let interval = calculateHapticInterval(for: minDistance)
         maybeTriggerHapticFeedback(withInterval: interval)
         
         if hasSignificantChanges(from: previousDetectedResults, to: detectedResults) {
             previousDetectedResults = detectedResults
-
+            
             // Perform the notification
             speak(checkDistance.location, distance: minDistance)
         }
-
+        
         
     }
     
@@ -107,38 +107,38 @@ class DetectionHandler {
     }
     
     private func maybeTriggerHapticFeedback(withInterval interval: TimeInterval) {
-          guard enableVibration else { return }
-          
-          let now = Date()
-          
-          // Check if enough time has passed since the last haptic feedback
-          if let lastTime = lastHapticTime, now.timeIntervalSince(lastTime) < interval {
-              return // Not enough time has passed, skip triggering haptic feedback
-          }
-          
-          // Trigger haptic feedback and update the last haptic time
-          triggerHapticFeedback()
-          
-          lastHapticTime = now
-      }
+        guard enableVibration else { return }
+        
+        let now = Date()
+        
+        // Check if enough time has passed since the last haptic feedback
+        if let lastTime = lastHapticTime, now.timeIntervalSince(lastTime) < interval {
+            return // Not enough time has passed, skip triggering haptic feedback
+        }
+        
+        // Trigger haptic feedback and update the last haptic time
+        triggerHapticFeedback()
+        
+        lastHapticTime = now
+    }
     
     private func triggerHapticFeedback() {
         hapticFeedbackGenerator?.impactOccurred()
     }
-
+    
     
     private func speak(_ text: String, distance: Double) {
         guard enableAlerts else { return }
         
         let now = Date()
-
+        
         if let lastTime = lastSpeakTime, now.timeIntervalSince(lastTime) < 1 {
             // If the same text was notified less than an interval, ignore it
             return
         }
-
+        
         lastSpeakTime = now
-
+        
         DispatchQueue.global(qos: .userInitiated).async {
             let utterance = AVSpeechUtterance(string: text)
             utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
@@ -158,22 +158,26 @@ class DetectionHandler {
         guard let oldMinDistance = oldResults.compactMap({ $0.distance }).min() else {
             return true // If no valid minimum distance in old results, consider it a significant change
         }
-
+        
         // Find the minimum distance from the new results
         guard let newMinDistance = newResults.compactMap({ $0.distance }).min() else {
             return true // If no valid minimum distance in new results, consider it a significant change
         }
-
-        // Sensitivity factor increases as the distance decreases, capped at a maximum value
-        let maxSensitivityFactor: Double = 10.0 // Cap the sensitivity factor to avoid excessive sensitivity
-        let sensitivityFactor = min(1 / max(newMinDistance, 0.1), maxSensitivityFactor) // Avoid division by zero and excessive sensitivity
-
+        
+        // If the new minimum distance is below 0.5 and has not increased above it
+        if newMinDistance < alertDistance && newMinDistance < oldMinDistance {
+            return true
+        }
+        
+        // Sensitivity factor is more aggressive for smaller distances
+        let sensitivityFactor = min(1 / max(newMinDistance, 0.1), 10.0) // Cap the sensitivity factor
+        
         // Define a base threshold
         let baseThreshold = 0.1
         
         // Adjust threshold based on sensitivity
         let adjustedThreshold = baseThreshold * sensitivityFactor
-
+        
         // Check if the difference between the minimum distances is significant
         return abs(oldMinDistance - newMinDistance) > adjustedThreshold
     }
