@@ -24,12 +24,24 @@
 		F45931A12C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931A02C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift */; };
 		F45931A32C99549F00DA4FC3 /* TapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931A22C99549F00DA4FC3 /* TapDetector.swift */; };
 		F45931A52C99755B00DA4FC3 /* DetectionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931A42C99755B00DA4FC3 /* DetectionHandler.swift */; };
+		F45931AF2C9A94ED00DA4FC3 /* EyezeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931AE2C9A94ED00DA4FC3 /* EyezeTests.swift */; };
+		F45931B62C9A956600DA4FC3 /* DistanceResultsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931B52C9A956600DA4FC3 /* DistanceResultsExtensions.swift */; };
 		F46C8C7B2C8B3A3900978CE7 /* EyezeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */; };
 		F46C8C7F2C8B3A3A00978CE7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */; };
 		F46C8C832C8B3A3A00978CE7 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F46C8C822C8B3A3A00978CE7 /* Preview Assets.xcassets */; };
 		F46C8C9F2C8D700C00978CE7 /* DistanceUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C9E2C8D700C00978CE7 /* DistanceUtils.swift */; };
 		F46C8CA02C8D700C00978CE7 /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F46C8C9D2C8D700C00978CE7 /* ARViewController.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		F45931B02C9A94ED00DA4FC3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F46C8C6F2C8B3A3900978CE7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F46C8C762C8B3A3900978CE7;
+			remoteInfo = Eyeze;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		F45931562C8D72A300DA4FC3 /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -50,6 +62,9 @@
 		F45931A02C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIObstaclesResponse.swift; sourceTree = "<group>"; };
 		F45931A22C99549F00DA4FC3 /* TapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapDetector.swift; sourceTree = "<group>"; };
 		F45931A42C99755B00DA4FC3 /* DetectionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectionHandler.swift; sourceTree = "<group>"; };
+		F45931AC2C9A94ED00DA4FC3 /* EyezeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EyezeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F45931AE2C9A94ED00DA4FC3 /* EyezeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyezeTests.swift; sourceTree = "<group>"; };
+		F45931B52C9A956600DA4FC3 /* DistanceResultsExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceResultsExtensions.swift; sourceTree = "<group>"; };
 		F46C8C772C8B3A3900978CE7 /* Eyeze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Eyeze.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyezeApp.swift; sourceTree = "<group>"; };
 		F46C8C7E2C8B3A3A00978CE7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -61,6 +76,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		F45931A92C9A94ED00DA4FC3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F46C8C742C8B3A3900978CE7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -105,8 +127,17 @@
 			isa = PBXGroup;
 			children = (
 				F45931952C8F529700DA4FC3 /* UtilsExtensions.swift */,
+				F45931B52C9A956600DA4FC3 /* DistanceResultsExtensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		F45931AD2C9A94ED00DA4FC3 /* EyezeTests */ = {
+			isa = PBXGroup;
+			children = (
+				F45931AE2C9A94ED00DA4FC3 /* EyezeTests.swift */,
+			);
+			path = EyezeTests;
 			sourceTree = "<group>";
 		};
 		F46C8C6E2C8B3A3900978CE7 = {
@@ -115,6 +146,7 @@
 				F45931972C96BD3200DA4FC3 /* Localizable.xcstrings */,
 				F45931682C8EED1F00DA4FC3 /* Config.xcconfig */,
 				F46C8C792C8B3A3900978CE7 /* Eyeze */,
+				F45931AD2C9A94ED00DA4FC3 /* EyezeTests */,
 				F46C8C782C8B3A3900978CE7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -123,6 +155,7 @@
 			isa = PBXGroup;
 			children = (
 				F46C8C772C8B3A3900978CE7 /* Eyeze.app */,
+				F45931AC2C9A94ED00DA4FC3 /* EyezeTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -171,6 +204,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		F45931AB2C9A94ED00DA4FC3 /* EyezeTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F45931B22C9A94ED00DA4FC3 /* Build configuration list for PBXNativeTarget "EyezeTests" */;
+			buildPhases = (
+				F45931A82C9A94ED00DA4FC3 /* Sources */,
+				F45931A92C9A94ED00DA4FC3 /* Frameworks */,
+				F45931AA2C9A94ED00DA4FC3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F45931B12C9A94ED00DA4FC3 /* PBXTargetDependency */,
+			);
+			name = EyezeTests;
+			productName = EyezeTests;
+			productReference = F45931AC2C9A94ED00DA4FC3 /* EyezeTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F46C8C762C8B3A3900978CE7 /* Eyeze */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F46C8C862C8B3A3A00978CE7 /* Build configuration list for PBXNativeTarget "Eyeze" */;
@@ -201,6 +252,10 @@
 				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1520;
 				TargetAttributes = {
+					F45931AB2C9A94ED00DA4FC3 = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = F46C8C762C8B3A3900978CE7;
+					};
 					F46C8C762C8B3A3900978CE7 = {
 						CreatedOnToolsVersion = 15.2;
 					};
@@ -224,11 +279,19 @@
 			projectRoot = "";
 			targets = (
 				F46C8C762C8B3A3900978CE7 /* Eyeze */,
+				F45931AB2C9A94ED00DA4FC3 /* EyezeTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		F45931AA2C9A94ED00DA4FC3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F46C8C752C8B3A3900978CE7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -242,6 +305,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		F45931A82C9A94ED00DA4FC3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F45931AF2C9A94ED00DA4FC3 /* EyezeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F46C8C732C8B3A3900978CE7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -249,6 +320,7 @@
 				F459318E2C8F36A000DA4FC3 /* AzureAiConfig.swift in Sources */,
 				F459319B2C96D04600DA4FC3 /* LanguageManager.swift in Sources */,
 				F45931962C8F529700DA4FC3 /* UtilsExtensions.swift in Sources */,
+				F45931B62C9A956600DA4FC3 /* DistanceResultsExtensions.swift in Sources */,
 				F45931A12C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift in Sources */,
 				F45931902C8F3B9400DA4FC3 /* AzureAiService.swift in Sources */,
 				F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */,
@@ -269,7 +341,56 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		F45931B12C9A94ED00DA4FC3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F46C8C762C8B3A3900978CE7 /* Eyeze */;
+			targetProxy = F45931B02C9A94ED00DA4FC3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		F45931B32C9A94ED00DA4FC3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79626KCE83;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hollander.EyezeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Eyeze.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Eyeze";
+			};
+			name = Debug;
+		};
+		F45931B42C9A94ED00DA4FC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 79626KCE83;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hollander.EyezeTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Eyeze.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Eyeze";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		F46C8C842C8B3A3A00978CE7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -469,6 +590,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F45931B22C9A94ED00DA4FC3 /* Build configuration list for PBXNativeTarget "EyezeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F45931B32C9A94ED00DA4FC3 /* Debug */,
+				F45931B42C9A94ED00DA4FC3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F46C8C722C8B3A3900978CE7 /* Build configuration list for PBXProject "Eyeze" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

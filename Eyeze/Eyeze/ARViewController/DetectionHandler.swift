@@ -12,12 +12,14 @@ import AVFoundation
 
 class DetectionHandler {
     
+    @AppStorage("enableAlerts") private var enableAlerts: Bool = true
     @AppStorage("detectionDistance") private var detectionDistance: Double = DistanceLevel.DETECTION_DEFAULT_VALUE
     @AppStorage("warningDistance") private var warningDistance: Double = DistanceLevel.DETECTION_WARNING_VALUE
     @AppStorage("alertDistance") private var alertDistance: Double = DistanceLevel.DETECTION_ALERT_VALUE
     @AppStorage("enableVibration") private var enableVibration: Bool = true
     
-    private let DEBOUNCE_INTERVAL: TimeInterval = 2.0
+    private let DEBOUNCE_INTERVAL: TimeInterval = 1.0
+    private let SPEAK_DEBOUNCE_INTERVAL: TimeInterval = 4.0
     private var hapticFeedbackGenerator: UIImpactFeedbackGenerator?
     private var lastNotificationTimes: [String: Date] = [:]
     private let speechSynthesizer = AVSpeechSynthesizer()
@@ -32,7 +34,7 @@ class DetectionHandler {
     func handleDistanceResults(_ detectedResults: [DistanceResult]) {
         let now = Date()
         
-        // Ensure at least 1 second has passed since the last check
+        // Ensure at least x second has passed since the last check
         if now.timeIntervalSince(lastUpdate) < DEBOUNCE_INTERVAL {
             // Not enough time has passed, ignore this call
             return
@@ -42,23 +44,15 @@ class DetectionHandler {
         lastUpdate = now
         
         
-        let checkDistance = detectedResults.checkDistances(alertDistance: alertDistance, warningDistance: warningDistance)
+        let checkDistance = detectedResults.checkDistances()
         
         if checkDistance.shouldAlert {
             triggerHapticFeedback()
             
-            var text = ""
-            if checkDistance.level == .alert {
-                text = checkDistance.location
-            } else if checkDistance.level == .warning {
-                text = "Warning \(checkDistance.location)"
-            }
+            var text = checkDistance.location
             
             // Perform the notification
-            print(text)
-            //            if !text.isEmpty {
-            //                speak(text)
-            //            }
+            speak(text, force: checkDistance.level == .alert)
         }
         
     }
@@ -69,9 +63,13 @@ class DetectionHandler {
         }
     }
     
-    private func speak(_ text: String) {
+    private func speak(_ text: String, force: Bool) {
+        if !enableAlerts {
+            return
+        }
+        
         let now = Date()
-        if let lastTime = lastNotificationTimes[text], now.timeIntervalSince(lastTime) < DEBOUNCE_INTERVAL {
+        if let lastTime = lastNotificationTimes[text], now.timeIntervalSince(lastTime) < SPEAK_DEBOUNCE_INTERVAL, !force {
             // If the same text was notified less than an interval, ignore it
             return
         }
@@ -79,10 +77,14 @@ class DetectionHandler {
         // Update the last notification time for this text
         lastNotificationTimes[text] = now
         
-        
-        
-        let utterance = AVSpeechUtterance(string: text)
-        speechSynthesizer.speak(utterance)
+        DispatchQueue.global(qos: .userInitiated).async {
+            let utterance = AVSpeechUtterance(string: text)
+            
+            // Execute speech on the main thread
+            DispatchQueue.main.async {
+                self.speechSynthesizer.speak(utterance)
+            }
+        }
     }
     
 }

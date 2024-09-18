@@ -62,6 +62,9 @@
         }
       }
     },
+    "Enable Alerts" : {
+
+    },
     "Enable Vibration" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -72,9 +75,6 @@
           }
         }
       }
-    },
-    "English" : {
-
     },
     "expression" : {
       "extractionState" : "manual",
@@ -120,9 +120,6 @@
         }
       }
     },
-    "Hebrew" : {
-
-    },
     "Home" : {
       "localizations" : {
         "en" : {
@@ -138,9 +135,6 @@
           }
         }
       }
-    },
-    "Language" : {
-
     },
     "location" : {
       "extractionState" : "manual",
@@ -323,9 +317,6 @@
           }
         }
       }
-    },
-    "Select Language" : {
-
     },
     "Settings" : {
       "localizations" : {
