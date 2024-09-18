@@ -31,7 +31,7 @@ extension [DistanceResult] {
         case topRight = "Top Right"
         case top = "Top"
         case left = "Left"
-        case center = "Center"
+        case center = "Forward"
         case right = "Right"
         case bottomRight = "Bottom Right"
         case bottomLeft = "Bottom Left"
