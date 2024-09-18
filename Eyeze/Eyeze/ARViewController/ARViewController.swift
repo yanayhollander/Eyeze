@@ -38,8 +38,7 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     
     private var buttonsContainer: UIView!
     private var distanceLabelsContainer: UIView!
-    private var describeObstaclesButton: UIButton!
-    private var describeSceneButton: UIButton!
+    private var voiceCommandButton: UIButton!
     private var responseTextView: UITextView!
     
     private var processingText: String = ""
@@ -65,8 +64,8 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         setupButtonsContainer()
         
         voiceCommandController = VoiceCommandController()
-        voiceCommandController.addCommand("describe scene", action: describeScene)
-        voiceCommandController.addCommand("describe obstacles", action: describeObstacles)
+        voiceCommandController.addCommand("Describe scene", action: describeScene)
+        voiceCommandController.addCommand("Describe obstacles", action: describeObstacles)
         voiceCommandController.setOnCommandNotFound {
             let utteranse = AVSpeechUtterance(string: "could not reconiaze the command, please try again")
             self.speechSynthesizer.speak(utteranse)
@@ -135,35 +134,20 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         view.addSubview(buttonsContainer)
         
         // Setup Describe Obstacles Button
-        describeObstaclesButton = UIButton(type: .system)
-        describeObstaclesButton.translatesAutoresizingMaskIntoConstraints = false
-        describeObstaclesButton.setTitle("Voice command", for: .normal)
-        describeObstaclesButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        describeObstaclesButton.setTitleColor(.white, for: .normal)
-        describeObstaclesButton.backgroundColor = .systemBlue
-        describeObstaclesButton.layer.cornerRadius = 10
-        describeObstaclesButton.layer.shadowColor = UIColor.black.cgColor
-        describeObstaclesButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        describeObstaclesButton.layer.shadowOpacity = 0.5
-        describeObstaclesButton.layer.shadowRadius = 4
-        describeObstaclesButton.addTarget(self, action: #selector(self.voiceCommandController.startListening), for: .touchUpInside)
-        //describeObstaclesButton.addTarget(self, action: #selector(self.voiceCommandController.execute), for: .touchUpInside)
-        buttonsContainer.addSubview(describeObstaclesButton)
-
-        // Setup Describe Scene Button
-        describeSceneButton = UIButton(type: .system)
-        describeSceneButton.translatesAutoresizingMaskIntoConstraints = false
-        describeSceneButton.setTitle("execute", for: .normal)
-        describeSceneButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
-        describeSceneButton.setTitleColor(.white, for: .normal)
-        describeSceneButton.backgroundColor = .systemBlue
-        describeSceneButton.layer.cornerRadius = 10
-        describeSceneButton.layer.shadowColor = UIColor.black.cgColor
-        describeSceneButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        describeSceneButton.layer.shadowOpacity = 0.5
-        describeSceneButton.layer.shadowRadius = 4
-        describeSceneButton.addTarget(self, action: #selector(self.voiceCommandController.execute), for: .touchUpInside)
-        buttonsContainer.addSubview(describeSceneButton)
+        voiceCommandButton = UIButton(type: .system)
+        voiceCommandButton.translatesAutoresizingMaskIntoConstraints = false
+        voiceCommandButton.setTitle("Voice command", for: .normal)
+        voiceCommandButton.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        voiceCommandButton.setTitleColor(.white, for: .normal)
+        voiceCommandButton.backgroundColor = .systemBlue
+        voiceCommandButton.layer.cornerRadius = 10
+        voiceCommandButton.layer.shadowColor = UIColor.black.cgColor
+        voiceCommandButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+        voiceCommandButton.layer.shadowOpacity = 0.5
+        voiceCommandButton.layer.shadowRadius = 4
+        voiceCommandButton.addTarget(self, action: #selector(executeAsync), for: .touchUpInside)
+        voiceCommandButton.addTarget(self, action: #selector(startListenAsync), for: .touchDown)
+        buttonsContainer.addSubview(voiceCommandButton)
         
         // Setup Response TextView
         responseTextView = UITextView()
@@ -185,15 +169,10 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
             buttonsContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
             buttonsContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            describeObstaclesButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor),
-            describeObstaclesButton.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor, constant: -30),
-            describeObstaclesButton.heightAnchor.constraint(equalToConstant: 50),
-            describeObstaclesButton.widthAnchor.constraint(equalToConstant: 200),
-            
-            describeSceneButton.topAnchor.constraint(equalTo: describeObstaclesButton.bottomAnchor, constant: 15),
-            describeSceneButton.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor, constant: -30),
-            describeSceneButton.heightAnchor.constraint(equalToConstant: 50),
-            describeSceneButton.widthAnchor.constraint(equalToConstant: 200),
+            voiceCommandButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor),
+            voiceCommandButton.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor, constant: -30),
+            voiceCommandButton.heightAnchor.constraint(equalToConstant: 50),
+            voiceCommandButton.widthAnchor.constraint(equalToConstant: 200),
             
             responseTextView.leadingAnchor.constraint(equalTo: buttonsContainer.leadingAnchor),
             responseTextView.trailingAnchor.constraint(equalTo: buttonsContainer.trailingAnchor),
@@ -451,5 +430,13 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
     func tapDetectorDidDetectDoubleTap(_ tapDetector: TapDetector) {
         // Handle the double tap event in your view controller
         //        describeObstacles()
+    }
+    
+    @objc func startListenAsync() {
+            self.voiceCommandController.startListening(languege: Language.english)
+    }
+    
+    @objc func executeAsync() {
+            self.voiceCommandController.execute()
     }
 }

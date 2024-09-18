@@ -29,16 +29,27 @@ import AVFoundation
     
     @objc func startListening(languege: String = Language.english) {
         voiceRecognaizer.startRecordToTranscription()
+        print("start listening")
     }
     
     @objc func execute() {
-        voiceRecognaizer.stopRecording()
-        let command = voiceRecognaizer.GetLatestsRecordingTranscription()
-        
-        if let action = commands[command] {
-            action()
-        } else {
-            onCommandNotFound()
+        DispatchQueue.global(qos: .background).async {
+            self.voiceRecognaizer.stopRecording()
+            
+            while !self.voiceRecognaizer.isProccesingEnd(){
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+            }
+            
+            DispatchQueue.main.async {
+                let command = self.voiceRecognaizer.GetLatestsRecordingTranscription()
+                if let action = self.commands[command] {
+                    print("executing command \(command)")
+                    action()
+                } else {
+                    print("failed to find command")
+                    self.onCommandNotFound()
+                }
+            }
         }
     }
 }

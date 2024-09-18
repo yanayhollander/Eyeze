@@ -31,7 +31,11 @@ class VoiceRecognaizer {
     }
 
     func GetLatestsRecordingTranscription() -> String {
-        return recognitionResult?.bestTranscription.formattedString ?? ""
+         recognitionResult?.bestTranscription.formattedString ?? ""
+    }
+    
+    func isProccesingEnd() -> Bool {
+        return recognitionTask.state == .completed
     }
     
     func startRecordToTranscription(language: String = Language.english) {
@@ -52,11 +56,6 @@ class VoiceRecognaizer {
         
         recognitionTask = recogniazer.recognitionTask(with: recognitionRequest) { result, error in
             if let result = result {
-                print("result.isfinal = \(result.isFinal)")
-                if result.isFinal{
-                    self.stopRecording()
-                    return
-                }
                 self.recognitionResult = result
             } else if let error = error {
                 print("Error transcribing audio: \(error.localizedDescription)")
@@ -79,7 +78,6 @@ class VoiceRecognaizer {
     func stopRecording() {
         recognitionRequest.endAudio()
         recognitionTask?.finish()
-        recognitionTask = nil
         audioEngine.inputNode.removeTap(onBus: 0)
         audioEngine.stop()
         resetAudioSession()
@@ -90,7 +88,7 @@ class VoiceRecognaizer {
     private func setupAudioSession(){
         let audioSession = AVAudioSession.sharedInstance()
         do {
-            try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
+            try audioSession.setCategory(.record, mode: .measurement, options: [.duckOthers])
             try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
             print("Failed to configure audio session")
@@ -101,6 +99,7 @@ class VoiceRecognaizer {
     private func resetAudioSession(){
         let audioSession = AVAudioSession.sharedInstance()
         do {
+            try audioSession.setCategory(.playback, mode: .default, options: [])
             try audioSession.setActive(false, options: .notifyOthersOnDeactivation)
         } catch {
             print("Failed to deactivate audio session")
