@@ -174,11 +174,6 @@ class DetectionHandler {
         // Adjust threshold based on sensitivity
         let adjustedThreshold = baseThreshold * sensitivityFactor
 
-        // Add an additional check for distances below a critical threshold (e.g., 0.5m)
-        if newMinDistance < alertDistance {
-            return true // Always consider it significant if the new minimum distance is very close to 0m
-        }
-        
         // Check if the difference between the minimum distances is significant
         return abs(oldMinDistance - newMinDistance) > adjustedThreshold
     }
