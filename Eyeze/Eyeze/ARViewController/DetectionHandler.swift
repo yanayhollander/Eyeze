@@ -39,9 +39,6 @@ class DetectionHandler {
         
         // Pre-warm the AVSpeechSynthesizer on the main thread
         prepareSpeechSynthesizer()
-        
-        // Pre-set the audio session on the background thread
-        prepareAudioSession()
     }
     
     private func prepareSpeechSynthesizer() {
@@ -49,18 +46,6 @@ class DetectionHandler {
         DispatchQueue.main.async {
             let silentUtterance = AVSpeechUtterance(string: " ")
             self.speechSynthesizer.speak(silentUtterance)
-        }
-    }
-    
-    private func prepareAudioSession() {
-        DispatchQueue.global(qos: .background).async {
-            do {
-                // Use playAndRecord category with defaultToSpeaker option
-                try self.audioSession.setCategory(.playAndRecord, options: .defaultToSpeaker)
-                try self.audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-            } catch {
-                print("Failed to set audio session category: \(error)")
-            }
         }
     }
     
