@@ -20,7 +20,6 @@
 		F459319D2C96F43200DA4FC3 /* DistanceLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459319C2C96F43200DA4FC3 /* DistanceLevel.swift */; };
 		F459319F2C98022E00DA4FC3 /* Prompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459319E2C98022E00DA4FC3 /* Prompt.swift */; };
 		F45931A12C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931A02C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift */; };
-		F45931A32C99549F00DA4FC3 /* TapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931A22C99549F00DA4FC3 /* TapDetector.swift */; };
 		F45931A52C99755B00DA4FC3 /* DetectionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931A42C99755B00DA4FC3 /* DetectionHandler.swift */; };
 		F45931AF2C9A94ED00DA4FC3 /* EyezeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931AE2C9A94ED00DA4FC3 /* EyezeTests.swift */; };
 		F45931B62C9A956600DA4FC3 /* DistanceResultsExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931B52C9A956600DA4FC3 /* DistanceResultsExtensions.swift */; };
@@ -56,7 +55,6 @@
 		F459319C2C96F43200DA4FC3 /* DistanceLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DistanceLevel.swift; sourceTree = "<group>"; };
 		F459319E2C98022E00DA4FC3 /* Prompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Prompt.swift; sourceTree = "<group>"; };
 		F45931A02C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIObstaclesResponse.swift; sourceTree = "<group>"; };
-		F45931A22C99549F00DA4FC3 /* TapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TapDetector.swift; sourceTree = "<group>"; };
 		F45931A42C99755B00DA4FC3 /* DetectionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectionHandler.swift; sourceTree = "<group>"; };
 		F45931AC2C9A94ED00DA4FC3 /* EyezeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EyezeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F45931AE2C9A94ED00DA4FC3 /* EyezeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EyezeTests.swift; sourceTree = "<group>"; };
@@ -163,7 +161,6 @@
 				F46C8C802C8B3A3A00978CE7 /* Eyeze.entitlements */,
 				F46C8C812C8B3A3A00978CE7 /* Preview Content */,
 				F459319A2C96D04600DA4FC3 /* LanguageManager.swift */,
-				F45931A22C99549F00DA4FC3 /* TapDetector.swift */,
 			);
 			path = Eyeze;
 			sourceTree = "<group>";
@@ -314,7 +311,6 @@
 				F45931932C8F421E00DA4FC3 /* OpenAISceneResponse.swift in Sources */,
 				F46C8C9F2C8D700C00978CE7 /* DistanceUtils.swift in Sources */,
 				F459319D2C96F43200DA4FC3 /* DistanceLevel.swift in Sources */,
-				F45931A32C99549F00DA4FC3 /* TapDetector.swift in Sources */,
 				F459319F2C98022E00DA4FC3 /* Prompt.swift in Sources */,
 				F459315B2C8D72A300DA4FC3 /* ContentView.swift in Sources */,
 				F45931592C8D72A300DA4FC3 /* HomeView.swift in Sources */,
