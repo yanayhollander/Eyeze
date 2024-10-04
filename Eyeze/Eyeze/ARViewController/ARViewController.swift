@@ -117,34 +117,13 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
         buttonsContainer = UIView()
         buttonsContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(buttonsContainer)
-        
-//        // Setup Describe Obstacles Button
-//        describeObstaclesButton = UIButton(type: .system)
-//        describeObstaclesButton.translatesAutoresizingMaskIntoConstraints = false
-//        describeObstaclesButton.setTitle("Obstacles", for: .normal)
-//        describeObstaclesButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .bold)
-//        describeObstaclesButton.setTitleColor(.systemGray, for: .normal)
-//        describeObstaclesButton.backgroundColor = .black
-//        describeObstaclesButton.layer.cornerRadius = 0
-//        describeObstaclesButton.layer.shadowColor = UIColor.black.cgColor
-//        describeObstaclesButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-//        describeObstaclesButton.layer.shadowOpacity = 0.5
-//        describeObstaclesButton.layer.shadowRadius = 2
-//        describeObstaclesButton.addTarget(self, action: #selector(describeObstacles), for: .touchUpInside)
-//        buttonsContainer.addSubview(describeObstaclesButton)
 
         // Setup Describe Scene Button
         describeSceneButton = UIButton(type: .system)
         describeSceneButton.translatesAutoresizingMaskIntoConstraints = false
-//        describeSceneButton.setTitle("Scene", for: .normal)
-//        describeSceneButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .bold)
         describeSceneButton.setTitleColor(.systemGray, for: .normal)
         describeSceneButton.backgroundColor = .clear
         describeSceneButton.layer.cornerRadius = 0
-//        describeSceneButton.layer.shadowColor = UIColor.black.cgColor
-//        describeSceneButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-//        describeSceneButton.layer.shadowOpacity = 0.5
-//        describeSceneButton.layer.shadowRadius = 2
         describeSceneButton.addTarget(self, action: #selector(describeScene), for: .touchUpInside)
         
         // Single-tap action using the existing target
@@ -183,12 +162,6 @@ class ARViewController: UIViewController, ARSessionDelegate, AVSpeechSynthesizer
             buttonsContainer.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             buttonsContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
             buttonsContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            
-            // describeObstaclesButton Constraints
-//            describeObstaclesButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor),
-//            describeObstaclesButton.leadingAnchor.constraint(equalTo: buttonsContainer.leadingAnchor), // Align to the left
-//            describeObstaclesButton.heightAnchor.constraint(equalToConstant: 30),
-//            describeObstaclesButton.widthAnchor.constraint(equalTo: buttonsContainer.widthAnchor, multiplier: 0.5), // Set width to 50% of the container
 
             // describeSceneButton Constraints
             describeSceneButton.topAnchor.constraint(equalTo: buttonsContainer.topAnchor), // Align to the top of the container

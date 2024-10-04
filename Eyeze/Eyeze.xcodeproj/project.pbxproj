@@ -11,8 +11,6 @@
 		F459315A2C8D72A300DA4FC3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931572C8D72A300DA4FC3 /* SettingsView.swift */; };
 		F459315B2C8D72A300DA4FC3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931582C8D72A300DA4FC3 /* ContentView.swift */; };
 		F45931602C8ECAF300DA4FC3 /* SwiftOpenAI in Frameworks */ = {isa = PBXBuildFile; productRef = F459315F2C8ECAF300DA4FC3 /* SwiftOpenAI */; };
-		F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931642C8EE1BC00DA4FC3 /* ChatProvider.swift */; };
-		F45931672C8EE21B00DA4FC3 /* ChatDemoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */; };
 		F459318E2C8F36A000DA4FC3 /* AzureAiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459318D2C8F36A000DA4FC3 /* AzureAiConfig.swift */; };
 		F45931902C8F3B9400DA4FC3 /* AzureAiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F459318F2C8F3B9400DA4FC3 /* AzureAiService.swift */; };
 		F45931932C8F421E00DA4FC3 /* OpenAISceneResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45931922C8F421E00DA4FC3 /* OpenAISceneResponse.swift */; };
@@ -47,8 +45,6 @@
 		F45931562C8D72A300DA4FC3 /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		F45931572C8D72A300DA4FC3 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		F45931582C8D72A300DA4FC3 /* ContentView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		F45931642C8EE1BC00DA4FC3 /* ChatProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatProvider.swift; sourceTree = "<group>"; };
-		F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatDemoView.swift; sourceTree = "<group>"; };
 		F45931682C8EED1F00DA4FC3 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 		F45931692C8EEDBA00DA4FC3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F459318D2C8F36A000DA4FC3 /* AzureAiConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AzureAiConfig.swift; sourceTree = "<group>"; };
@@ -94,15 +90,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F45931632C8EE1AA00DA4FC3 /* ChatDemo */ = {
-			isa = PBXGroup;
-			children = (
-				F45931642C8EE1BC00DA4FC3 /* ChatProvider.swift */,
-				F45931662C8EE21B00DA4FC3 /* ChatDemoView.swift */,
-			);
-			path = ChatDemo;
-			sourceTree = "<group>";
-		};
 		F459318C2C8F368500DA4FC3 /* AzureAi */ = {
 			isa = PBXGroup;
 			children = (
@@ -166,7 +153,6 @@
 				F45931942C8F528200DA4FC3 /* Extensions */,
 				F45931912C8F420300DA4FC3 /* Models */,
 				F459318C2C8F368500DA4FC3 /* AzureAi */,
-				F45931632C8EE1AA00DA4FC3 /* ChatDemo */,
 				F46C8CA12C8D701C00978CE7 /* ARViewController */,
 				F46C8C7A2C8B3A3900978CE7 /* EyezeApp.swift */,
 				F45931582C8D72A300DA4FC3 /* ContentView.swift */,
@@ -323,9 +309,7 @@
 				F45931B62C9A956600DA4FC3 /* DistanceResultsExtensions.swift in Sources */,
 				F45931A12C9805E700DA4FC3 /* OpenAIObstaclesResponse.swift in Sources */,
 				F45931902C8F3B9400DA4FC3 /* AzureAiService.swift in Sources */,
-				F45931652C8EE1BC00DA4FC3 /* ChatProvider.swift in Sources */,
 				F459315A2C8D72A300DA4FC3 /* SettingsView.swift in Sources */,
-				F45931672C8EE21B00DA4FC3 /* ChatDemoView.swift in Sources */,
 				F45931A52C99755B00DA4FC3 /* DetectionHandler.swift in Sources */,
 				F45931932C8F421E00DA4FC3 /* OpenAISceneResponse.swift in Sources */,
 				F46C8C9F2C8D700C00978CE7 /* DistanceUtils.swift in Sources */,
